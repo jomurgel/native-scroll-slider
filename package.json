@@ -22,8 +22,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "lint": "eslint src --fix",
-    "lint:check": "eslint src",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run lint && npm run build"
   },
@@ -33,7 +33,7 @@
   },
   "keywords": [
     "slider",
-    "scroll", 
+    "scroll",
     "native",
     "javascript",
     "carousel",
