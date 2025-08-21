@@ -1,0 +1,50 @@
+{
+  "name": "@jomurgel/native-scroll-slider",
+  "version": "0.0.1",
+  "description": "A simple slider that leverages native overflow scroll behavior.",
+  "license": "MIT",
+  "author": "Jo Murgel",
+  "type": "module",
+  "main": "dist/index.esm.js",
+  "module": "dist/index.esm.js",
+  "unpkg": "dist/native-scroll-slider.min.js",
+  "jsdelivr": "dist/native-scroll-slider.min.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.esm.js",
+      "default": "./dist/index.esm.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "lint": "eslint src --fix",
+    "lint:check": "eslint src",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run lint && npm run build"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "vite": "^5.0.0"
+  },
+  "keywords": [
+    "slider",
+    "scroll", 
+    "native",
+    "javascript",
+    "carousel",
+    "web-component"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jomurgel/native-scroll-slider.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jomurgel/native-scroll-slider/issues"
+  },
+  "homepage": "https://github.com/jomurgel/native-scroll-slider#readme"
+}
