@@ -22,12 +22,12 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 
 ### npm
 ```bash
-npm install @jomurgel/native-scroll-slider
+npm install native-scroll-slider
 ```
 
 ### CDN
 ```html
-<script src="https://unpkg.com/@jomurgel/native-scroll-slider/dist/native-scroll-slider.min.js"></script>
+<script src="https://unpkg.com/native-scroll-slider@0.0.1/dist/native-scroll-slider.min.js"></script>
 <script>
   const slider = new NativeScrollSlider(document.querySelector('.slider-track'));
 </script>
@@ -35,8 +35,6 @@ npm install @jomurgel/native-scroll-slider
 
 ### NPM Imports
 ```js
-import NativeScrollSlider from '@jomurgel/native-scroll-slider';
-// or
 import NativeScrollSlider from 'native-scroll-slider';
 ```
 
@@ -630,3 +628,7 @@ MIT License © 2024 [Jo Murgel](https://github.com/jomurgel) - see [LICENSE](LIC
 **Made with ❤️ by [jomurgel](https://github.com/jomurgel)**
 
 For more examples and documentation, visit: [https://github.com/jomurgel/native-scroll-slider](https://github.com/jomurgel/native-scroll-slider)
+
+## Changelog
+- **0.0.1** Initial concept push.
+- **0.0.2** Updates README and provides demo. Fixes loading behaviors.
