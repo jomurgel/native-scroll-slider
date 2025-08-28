@@ -3,14 +3,14 @@
  *
  * A simple slider that leverages native overflow scroll behavior.
  *
- * @author John Murgel
- * @version 0.0.1
+ * @author Jo Murgel
+ * @version 0.0.2
  * @license MIT
  * @copyright 2024 Jo Murgel
  * @see https://github.com/jomurgel/native-scroll-slider
  * @see https://www.npmjs.com/package/@jomurgel/native-scroll-slider
  */
-export default class NativeScrollSlider {
+class NativeScrollSlider {
 
   /**
        * Initialize the slider.
@@ -227,11 +227,11 @@ export default class NativeScrollSlider {
       const style = document.createElement('style');
       style.id = 'native-scroll-slider-styles';
       style.textContent = `
-                .slider-ready .slider-track::-webkit-scrollbar,
-                [data-slider-config] > *::-webkit-scrollbar {
-                    display: none;
-                }
-            `;
+				  .slider-ready .slider-track::-webkit-scrollbar,
+				  [data-slider-config] > *::-webkit-scrollbar {
+					  display: none;
+				  }
+			  `;
       document.head.appendChild(style);
     }
   }
@@ -309,18 +309,24 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Setup the responsive settings.
-       *
-       * @returns {void}
-       */
+     * Setup the responsive settings.
+     *
+     * @returns {void}
+     */
   setupResponsive() {
     const width = window.innerWidth;
     let currentOptions = Object.assign({}, this.options);
 
-    for (let i = 0; i < this.options.responsive.length; i++) {
-      const breakpoint = this.options.responsive[i];
+    // Sort responsive breakpoints in descending order (largest first)
+    const sortedBreakpoints = [...this.options.responsive].sort((a, b) => b.breakpoint - a.breakpoint);
+
+    // Apply settings from all matching breakpoints in cascade (largest to smallest)
+    for (let i = 0; i < sortedBreakpoints.length; i++) {
+      const breakpoint = sortedBreakpoints[i];
       if (width <= breakpoint.breakpoint) {
+        // Apply this breakpoint's settings on top of previous settings
         currentOptions = Object.assign(currentOptions, breakpoint.settings);
+        // Don't break - continue to apply smaller breakpoints too
       }
     }
 
@@ -328,10 +334,10 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Setup the slides.
-       *
-       * @returns {void}
-       */
+   * Setup the slides.
+   *
+   * @returns {void}
+   */
   setupSlides() {
     if (!this.track) {
       console.error('setupSlides: track is null');
@@ -357,94 +363,81 @@ export default class NativeScrollSlider {
       containerWidth = window.innerWidth;
 
       // Account for the left padding we applied
-      const effectiveWidth = containerWidth - this.pullToRightLeftPadding - this.currentOptions.basePadding; // Use currentOptions
+      const effectiveWidth = containerWidth - this.pullToRightLeftPadding - this.currentOptions.basePadding;
 
-      if (this.currentOptions.showOverflow) {
-        totalGaps = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap;
-        overflowSlideWidth = 0;
-
-        if (this.currentOptions.overflowAmount > 0) {
-          const tempSlideWidth = (effectiveWidth - totalGaps - this.currentOptions.gap) / (this.currentOptions.slidesToShow + this.currentOptions.overflowAmount);
-          overflowSlideWidth = tempSlideWidth * this.currentOptions.overflowAmount;
-        }
-
-        slideWidth = (effectiveWidth - totalGaps - overflowSlideWidth) / this.currentOptions.slidesToShow;
-        availableWidth = effectiveWidth;
-      } else {
-        totalGaps = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap;
-        slideWidth = (effectiveWidth - totalGaps) / this.currentOptions.slidesToShow;
-        availableWidth = effectiveWidth;
-      }
-
-      // Don't add additional padding - we already set it in updatePullToRightPadding
-      leftPadding = 0;
-
-      // Show overflow mode: calculate to show partial next slide
       totalGaps = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap;
       overflowSlideWidth = 0;
 
-      // Calculate width needed for overflow
       if (this.currentOptions.overflowAmount > 0) {
-        // We need to account for one more slide partially visible
-        const tempSlideWidth = (containerWidth - totalGaps - this.currentOptions.gap) / (this.currentOptions.slidesToShow + this.currentOptions.overflowAmount);
+        const tempSlideWidth = (effectiveWidth - totalGaps - this.currentOptions.gap) / (this.currentOptions.slidesToShow + this.currentOptions.overflowAmount);
         overflowSlideWidth = tempSlideWidth * this.currentOptions.overflowAmount;
       }
 
-      slideWidth = (containerWidth - totalGaps - overflowSlideWidth) / this.currentOptions.slidesToShow;
+      let calculatedSlideWidth = (effectiveWidth - totalGaps - overflowSlideWidth) / this.currentOptions.slidesToShow;
 
-      // Apply minimum width constraint for center mode
-      if (this.currentOptions.centerMode && slideWidth < containerWidth) {
-        slideWidth = this.currentOptions.minSlideWidth;
+      // Apply minSlideWidth if defined - force it regardless of slidesToShow
+      const minSlideWidth = this.parseMinSlideWidth();
+      if (minSlideWidth > 0 && calculatedSlideWidth < minSlideWidth) {
+        slideWidth = minSlideWidth;
+
+        // Calculate how many slides can actually fit at this minimum width
+        // For overflow mode, we need to account for the overflow space too
+        const availableForSlides = effectiveWidth - overflowSlideWidth;
+        const maxSlidesAtMinWidth = Math.floor((availableForSlides + this.currentOptions.gap) / (minSlideWidth + this.currentOptions.gap));
+        const actualSlidesToShow = Math.max(1, Math.min(maxSlidesAtMinWidth, this.currentOptions.slidesToShow));
+
+        console.log('showOverflow mode - minSlideWidth forcing layout change:');
+        console.log('- configured slidesToShow:', this.currentOptions.slidesToShow);
+        console.log('- actual slides that fit:', actualSlidesToShow);
+        console.log('- slideWidth:', slideWidth);
+        console.log('- effectiveWidth:', effectiveWidth);
+      } else {
+        slideWidth = calculatedSlideWidth;
       }
 
-      totalNeededWidth = (slideWidth * this.currentOptions.slidesToShow) + totalGaps + overflowSlideWidth;
+      availableWidth = effectiveWidth;
 
-      // For overflow, we typically want minimal left padding to maximize visible content
-      leftPadding = Math.max(0, (containerWidth - totalNeededWidth) / 2);
-      availableWidth = totalNeededWidth;
+      // Don't add additional padding - we already set it in updatePullToRightPadding
+      leftPadding = 0;
     } else {
+      // Regular mode
       totalGaps = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap;
-      slideWidth = (containerWidth - totalGaps) / this.currentOptions.slidesToShow;
+      let calculatedSlideWidth = (containerWidth - totalGaps) / this.currentOptions.slidesToShow;
 
-      // Apply minimum width constraint for center mode
-      if (this.currentOptions.centerMode && slideWidth < this.currentOptions.minSlideWidth) {
-        slideWidth = this.currentOptions.minSlideWidth;
+      // Apply minSlideWidth constraint - force the width but don't change slide count
+      const minSlideWidth = this.parseMinSlideWidth();
+      if (minSlideWidth > 0 && calculatedSlideWidth < minSlideWidth) {
+        slideWidth = minSlideWidth;
+
+        // Keep original slidesToShow but recalculate total needed width
+        totalNeededWidth = (slideWidth * this.currentOptions.slidesToShow) + totalGaps;
+
+        if (this.currentOptions.centerMode) {
+          // For center mode, center the content within container
+          leftPadding = Math.max(0, (containerWidth - totalNeededWidth) / 2);
+          availableWidth = totalNeededWidth;
+        } else {
+          // For non-center mode, allow overflow - align left with minimal padding
+          leftPadding = Math.max(0, (containerWidth - totalNeededWidth) / 2);
+          availableWidth = totalNeededWidth;
+        }
+      } else {
+        // No minWidth constraint or already meets it
+        slideWidth = calculatedSlideWidth;
         totalNeededWidth = (slideWidth * this.currentOptions.slidesToShow) + totalGaps;
         leftPadding = Math.max(0, (containerWidth - totalNeededWidth) / 2);
         availableWidth = totalNeededWidth;
-      } else {
-        totalNeededWidth = (slideWidth * this.currentOptions.slidesToShow) + totalGaps;
-        leftPadding = (containerWidth - totalNeededWidth) / 2;
-        availableWidth = totalNeededWidth;
       }
-    }
 
-    // Only apply additional padding if not in pull-to-right mode
-    if (!this.currentOptions.showOverflow) {
+      // Apply padding to track
       this.track.style.paddingLeft = leftPadding + 'px';
       this.track.style.paddingRight = leftPadding + 'px';
     }
 
-    // Calculate final slide width
-    let finalSlideWidth;
-    if (this.currentOptions.showOverflow) {
-      totalGaps = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap;
-      overflowSlideWidth = 0;
-
-      if (this.currentOptions.overflowAmount > 0) {
-        const tempSlideWidth = (availableWidth - totalGaps - this.currentOptions.gap) / (this.currentOptions.slidesToShow + this.currentOptions.overflowAmount);
-        overflowSlideWidth = tempSlideWidth * this.currentOptions.overflowAmount;
-      }
-
-      finalSlideWidth = (availableWidth - totalGaps - overflowSlideWidth) / this.currentOptions.slidesToShow;
-    } else {
-      totalGaps = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap;
-      finalSlideWidth = (availableWidth - totalGaps) / this.currentOptions.slidesToShow;
-    }
-
+    // Apply slide widths
     for (let i = 0; i < this.slides.length; i++) {
       if (this.slides[i] && this.slides[i].style) {
-        this.slides[i].style.width = finalSlideWidth + 'px';
+        this.slides[i].style.width = slideWidth + 'px';
         this.slides[i].style.flexShrink = '0';
       }
     }
@@ -459,37 +452,92 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Setup the bounce back.
-       *
-       * @returns {void}
-       */
-  setupBounceBack() {
-    const slidesToClone = Math.max(this.currentOptions.slidesToShow, 2);
+     * Parse minSlideWidth from string or number
+     *
+     * @returns {number}
+     */
+  parseMinSlideWidth() {
+    if (!this.currentOptions.minSlideWidth) return 0;
 
-    for (let i = 0; i < slidesToClone; i++) {
-      const clone = this.slides[i].cloneNode(true);
-      clone.classList.add('cloned', 'bounce-clone');
-      this.track.appendChild(clone);
+    const minWidth = this.currentOptions.minSlideWidth;
+    if (typeof minWidth === 'string') {
+      // Handle "0px", "100px", etc.
+      const numericValue = parseFloat(minWidth);
+      return isNaN(numericValue) ? 0 : numericValue;
     }
 
-    for (let i = this.totalSlides - slidesToClone; i < this.totalSlides; i++) {
-      const clone = this.slides[i].cloneNode(true);
-      clone.classList.add('cloned', 'bounce-clone');
-      this.track.insertBefore(clone, this.track.firstChild);
+    return typeof minWidth === 'number' ? minWidth : 0;
+  }
+
+  /**
+   * Setup bounce back or infinite mode
+   *
+   * @param {string} mode - 'bounce' or 'infinite'
+   * @returns {void}
+   */
+  setupClonedSlides(mode) {
+    const slidesToClone = mode === 'infinite'
+      ? this.currentOptions.slidesToShow + 1
+      : Math.max(this.currentOptions.slidesToShow, 2);
+
+    if (mode === 'infinite') {
+      // Clone slides to end
+      for (let i = 0; i < slidesToClone; i++) {
+        const originalIndex = i % this.totalSlides;
+        const clone = this.slides[originalIndex].cloneNode(true);
+        clone.classList.add('cloned', 'infinite-clone');
+        clone.dataset.originalIndex = originalIndex;
+        this.track.appendChild(clone);
+      }
+
+      // Clone slides to beginning
+      for (let i = 0; i < slidesToClone; i++) {
+        const originalIndex = (this.totalSlides - slidesToClone + i) % this.totalSlides;
+        const clone = this.slides[originalIndex].cloneNode(true);
+        clone.classList.add('cloned', 'infinite-clone');
+        clone.dataset.originalIndex = originalIndex;
+        this.track.insertBefore(clone, this.track.firstChild);
+      }
+
+      this.initialCloneCount = slidesToClone;
+    } else {
+      // Bounce mode: clone to end
+      for (let i = 0; i < slidesToClone; i++) {
+        const clone = this.slides[i].cloneNode(true);
+        clone.classList.add('cloned', 'bounce-clone');
+        this.track.appendChild(clone);
+      }
+
+      // Clone to beginning
+      for (let i = this.totalSlides - slidesToClone; i < this.totalSlides; i++) {
+        const clone = this.slides[i].cloneNode(true);
+        clone.classList.add('cloned', 'bounce-clone');
+        this.track.insertBefore(clone, this.track.firstChild);
+      }
     }
 
     this.allSlides = Array.from(this.track.children);
 
+    // Set initial position after DOM updates
     const self = this;
     setTimeout(() => {
       self.calculateSlidePositions();
-      const firstRealSlideIndex = slidesToClone;
-      let initialPosition = self.slidePositions[firstRealSlideIndex];
 
+      const startIndex = mode === 'infinite'
+        ? slidesToClone + self.currentOptions.startSlide
+        : slidesToClone + self.currentOptions.startSlide;
+
+      let initialPosition = self.slidePositions[startIndex];
+
+      // Apply centerMode calculations if needed
       if (self.currentOptions.centerMode) {
-        const containerWidth = self.container.offsetWidth;
+        const trackStyles = window.getComputedStyle(self.track);
+        const trackPaddingLeft = parseFloat(trackStyles.paddingLeft) || 0;
+        const trackPaddingRight = parseFloat(trackStyles.paddingRight) || 0;
+        const visibleTrackWidth = self.track.offsetWidth - trackPaddingLeft - trackPaddingRight;
+
         const slideWidth = self.slides[0].offsetWidth;
-        initialPosition = initialPosition - (containerWidth / 2) + (slideWidth / 2);
+        initialPosition = initialPosition - (visibleTrackWidth / 2) + (slideWidth / 2);
       }
 
       self.track.scrollLeft = initialPosition;
@@ -498,51 +546,21 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Setup the true infinite.
-       *
-       * @returns {void}
-       */
+     * Setup the bounce back.
+     *
+     * @returns {void}
+     */
+  setupBounceBack() {
+    this.setupClonedSlides('bounce');
+  }
+
+  /**
+     * Setup the true infinite.
+     *
+     * @returns {void}
+     */
   setupTrueInfinite() {
-    // Start with fewer initial clones - we'll add more dynamically.
-    const initialClones = this.currentOptions.slidesToShow + 1;
-
-    // Clone slides to end
-    for (let i = 0; i < initialClones; i++) {
-      const originalIndex = i % this.totalSlides;
-      const clone = this.slides[originalIndex].cloneNode(true);
-      clone.classList.add('cloned', 'infinite-clone');
-      clone.dataset.originalIndex = originalIndex;
-      this.track.appendChild(clone);
-    }
-
-    // Clone slides to beginning
-    for (let i = 0; i < initialClones; i++) {
-      const originalIndex = (this.totalSlides - initialClones + i) % this.totalSlides;
-      const clone = this.slides[originalIndex].cloneNode(true);
-      clone.classList.add('cloned', 'infinite-clone');
-      clone.dataset.originalIndex = originalIndex;
-      this.track.insertBefore(clone, this.track.firstChild);
-    }
-
-    this.allSlides = Array.from(this.track.children);
-    this.initialCloneCount = initialClones;
-
-    const self = this;
-    setTimeout(() => {
-      self.calculateSlidePositions();
-      // Start at the first real slide (after initial clones)
-      const startIndex = initialClones + self.currentOptions.startSlide;
-      let initialPosition = self.slidePositions[startIndex];
-
-      if (self.currentOptions.centerMode) {
-        const containerWidth = self.container.offsetWidth;
-        const slideWidth = self.slides[0].offsetWidth;
-        initialPosition = initialPosition - (containerWidth / 2) + (slideWidth / 2);
-      }
-
-      self.track.scrollLeft = initialPosition;
-      self.currentSlide = self.currentOptions.startSlide;
-    }, 10);
+    this.setupClonedSlides('infinite');
   }
 
   /**
@@ -584,10 +602,10 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Update the current slide from the scroll.
-       *
-       * @returns {void}
-       */
+   * Update the current slide from the scroll.
+   *
+   * @returns {void}
+   */
   updateCurrentSlideFromScroll() {
     const scrollLeft = this.track.scrollLeft;
 
@@ -599,8 +617,14 @@ export default class NativeScrollSlider {
 
     let adjustedScrollLeft = scrollLeft;
     if (this.currentOptions.centerMode) {
-      const containerWidth = this.container.offsetWidth;
-      adjustedScrollLeft = scrollLeft + (containerWidth / 2);
+      // Get actual container dimensions accounting for padding
+      const containerStyles = window.getComputedStyle(this.container);
+      const containerPaddingLeft = parseFloat(containerStyles.paddingLeft) || 0;
+      const containerPaddingRight = parseFloat(containerStyles.paddingRight) || 0;
+      const containerInnerWidth = this.container.offsetWidth - containerPaddingLeft - containerPaddingRight;
+
+      // Adjust scroll position to account for centering and container padding
+      adjustedScrollLeft = scrollLeft + (containerInnerWidth / 2) + containerPaddingLeft;
     }
 
     let closestSlide = 0;
@@ -925,11 +949,11 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Go to the slide.
-       *
-       * @param {number} slideIndex - The index of the slide to go to.
-       * @returns {void}
-       */
+     * Go to the slide.
+     *
+     * @param {number} slideIndex - The index of the slide to go to.
+     * @returns {void}
+     */
   goToSlide(slideIndex) {
     // For infinite mode, don't use goToSlide - just use next/prev buttons.
     if (this.currentOptions.infinite) {
@@ -948,9 +972,19 @@ export default class NativeScrollSlider {
     }
 
     if (this.currentOptions.centerMode) {
-      const containerWidth = this.container.offsetWidth;
+      // Get actual container dimensions accounting for padding
+      const containerStyles = window.getComputedStyle(this.container);
+      const containerPaddingLeft = parseFloat(containerStyles.paddingLeft) || 0;
+      const containerPaddingRight = parseFloat(containerStyles.paddingRight) || 0;
+      const containerInnerWidth = this.container.offsetWidth - containerPaddingLeft - containerPaddingRight;
+
       const slideWidth = this.slides[0].offsetWidth;
-      targetPosition = targetPosition - (containerWidth / 2) + (slideWidth / 2);
+
+      // Center the slide within the container's inner width
+      targetPosition = targetPosition - (containerInnerWidth / 2) + (slideWidth / 2);
+
+      // Account for container padding offset in scroll position
+      targetPosition = targetPosition - containerPaddingLeft;
     }
 
     this.track.scrollTo({
@@ -962,19 +996,27 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Go to the next slide.
-       *
-       * @returns {void}
-       */
+   * Go to the next slide.
+   *
+   * @returns {void}
+   */
   next() {
     // For infinite mode, just scroll by one slide width.
     if (this.currentOptions.infinite) {
       const slideWidth = this.slides[0].offsetWidth + this.currentOptions.gap;
       const scrollAmount = slideWidth * this.currentOptions.slidesToScroll;
-      this.track.scrollTo({
-        left: this.track.scrollLeft + scrollAmount,
-        behavior: 'smooth'
-      });
+
+      if (this.currentOptions.centerMode) {
+        // For center mode, we need to find the current center slide and go to the next one
+        const currentCenterSlide = this.findCurrentCenterSlideIndex();
+        const nextCenterSlide = currentCenterSlide + this.currentOptions.slidesToScroll;
+        this.goToCenterSlide(nextCenterSlide);
+      } else {
+        this.track.scrollTo({
+          left: this.track.scrollLeft + scrollAmount,
+          behavior: 'smooth'
+        });
+      }
       return;
     }
 
@@ -992,19 +1034,27 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Go to the previous slide.
-       *
-       * @returns {void}
-       */
+     * Go to the previous slide.
+     *
+     * @returns {void}
+     */
   prev() {
     // For infinite mode, just scroll by one slide width.
     if (this.currentOptions.infinite) {
       const slideWidth = this.slides[0].offsetWidth + this.currentOptions.gap;
       const scrollAmount = slideWidth * this.currentOptions.slidesToScroll;
-      this.track.scrollTo({
-        left: this.track.scrollLeft - scrollAmount,
-        behavior: 'smooth'
-      });
+
+      if (this.currentOptions.centerMode) {
+        // For center mode, we need to find the current center slide and go to the previous one
+        const currentCenterSlide = this.findCurrentCenterSlideIndex();
+        const prevCenterSlide = currentCenterSlide - this.currentOptions.slidesToScroll;
+        this.goToCenterSlide(prevCenterSlide);
+      } else {
+        this.track.scrollTo({
+          left: this.track.scrollLeft - scrollAmount,
+          behavior: 'smooth'
+        });
+      }
       return;
     }
 
@@ -1019,6 +1069,69 @@ export default class NativeScrollSlider {
     }
 
     this.goToSlide(prevSlide);
+  }
+
+  /**
+     * Find the index of the currently centered slide in infinite mode
+     *
+     * @returns {number}
+     */
+  findCurrentCenterSlideIndex() {
+    const scrollLeft = this.track.scrollLeft;
+    const trackStyles = window.getComputedStyle(this.track);
+    const trackPaddingLeft = parseFloat(trackStyles.paddingLeft) || 0;
+    const visibleTrackWidth = this.track.offsetWidth - trackPaddingLeft - (parseFloat(trackStyles.paddingRight) || 0);
+
+    // Find the center point of the visible area
+    const centerPoint = scrollLeft + (visibleTrackWidth / 2);
+
+    let closestSlide = 0;
+    let closestDistance = Infinity;
+
+    const slidesToUse = this.allSlides || this.slides;
+    for (let i = 0; i < slidesToUse.length; i++) {
+      const slide = slidesToUse[i];
+      const slideCenter = slide.offsetLeft + (slide.offsetWidth / 2) - trackPaddingLeft;
+      const distance = Math.abs(centerPoint - slideCenter);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestSlide = i;
+      }
+    }
+
+    return closestSlide;
+  }
+
+  /**
+     * Go to a specific slide index and center it (for infinite mode)
+     *
+     * @param {number} slideIndex
+     * @returns {void}
+     */
+  goToCenterSlide(slideIndex) {
+    const slidesToUse = this.allSlides || this.slides;
+
+    // Make sure index is within bounds
+    if (slideIndex < 0 || slideIndex >= slidesToUse.length) {
+      return;
+    }
+
+    const targetSlide = slidesToUse[slideIndex];
+    const trackStyles = window.getComputedStyle(this.track);
+    const trackPaddingLeft = parseFloat(trackStyles.paddingLeft) || 0;
+    const trackPaddingRight = parseFloat(trackStyles.paddingRight) || 0;
+    const visibleTrackWidth = this.track.offsetWidth - trackPaddingLeft - trackPaddingRight;
+
+    // Calculate position to center this slide
+    const slideLeft = targetSlide.offsetLeft - trackPaddingLeft;
+    const slideWidth = targetSlide.offsetWidth;
+    const targetPosition = slideLeft - (visibleTrackWidth / 2) + (slideWidth / 2);
+
+    this.track.scrollTo({
+      left: targetPosition,
+      behavior: 'smooth'
+    });
   }
 
   /**
@@ -1094,39 +1207,42 @@ export default class NativeScrollSlider {
   }
 
   /**
-       * Start the autoplay.
-       *
-       * @returns {void}
-       */
+   * Start the autoplay.
+   *
+   * @returns {void}
+   */
   startAutoplay() {
     if (!this.currentOptions.autoplay) return;
 
     this.stopAutoplay();
     const self = this;
 
-    if (this.currentOptions.infinite) {
-      // For infinite mode, just scroll continuously.
-      this.autoplayInterval = setInterval(() => {
-        if (!self.isScrolling) {
-          const slideWidth = self.slides[0].offsetWidth + self.currentOptions.gap;
-          const scrollAmount = slideWidth * self.currentOptions.slidesToScroll;
-          self.track.scrollTo({
-            left: self.track.scrollLeft + scrollAmount,
-            behavior: 'smooth'
-          });
+    this.autoplayInterval = setInterval(() => {
+      if (!self.isScrolling) {
+        if (self.currentOptions.infinite) {
+          // Infinite mode with centerMode support
+          if (self.currentOptions.centerMode) {
+            const currentCenterSlide = self.findCurrentCenterSlideIndex();
+            const nextCenterSlide = currentCenterSlide + self.currentOptions.slidesToScroll;
+            self.goToCenterSlide(nextCenterSlide);
+          } else {
+            const slideWidth = self.slides[0].offsetWidth + self.currentOptions.gap;
+            const scrollAmount = slideWidth * self.currentOptions.slidesToScroll;
+            self.track.scrollTo({
+              left: self.track.scrollLeft + scrollAmount,
+              behavior: 'smooth'
+            });
+          }
 
           // Cleanup clones periodically during autoplay
           self.cleanupClonesForAutoplay();
-        }
-      }, this.currentOptions.autoplaySpeed);
-    } else {
-      // For other modes, use next() method.
-      this.autoplayInterval = setInterval(() => {
-        if (!self.isScrolling) {
+        } else {
+          // Non-infinite modes (regular, bounceBack) - use next() method
+          // This already handles centerMode properly via goToSlide()
           self.next();
         }
-      }, this.currentOptions.autoplaySpeed);
-    }
+      }
+    }, this.currentOptions.autoplaySpeed);
   }
 
   /**
@@ -1216,4 +1332,11 @@ export default class NativeScrollSlider {
     this.stopAutoplay();
     clearTimeout(this.scrollTimeout);
   }
+}
+
+export default NativeScrollSlider;
+
+// Also make available globally when used in browser.
+if (typeof window !== 'undefined') {
+  window.NativeScrollSlider = NativeScrollSlider;
 }
