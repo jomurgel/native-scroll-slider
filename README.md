@@ -25,7 +25,7 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 npm install native-scroll-slider
 ```
 
-### CDN
+### CDN (Coming Soon)
 ```html
 <script src="https://unpkg.com/native-scroll-slider@0.0.1/dist/native-scroll-slider.min.js"></script>
 <script>
