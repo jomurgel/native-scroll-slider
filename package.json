@@ -1,5 +1,5 @@
 {
-  "name": "@jomurgel/native-scroll-slider",
+  "name": "native-scroll-slider",
   "version": "0.0.3",
   "description": "A simple slider that leverages native overflow scroll behavior.",
   "license": "MIT",
