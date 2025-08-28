@@ -25,7 +25,7 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 npm install @jomurgel/native-scroll-slider
 ```
 
-### CDN
+### CDN (Coming Soon)
 ```html
 <script src="https://unpkg.com/@jomurgel/native-scroll-slider/dist/native-scroll-slider.min.js"></script>
 <script>
@@ -35,8 +35,6 @@ npm install @jomurgel/native-scroll-slider
 
 ### NPM Imports
 ```js
-import NativeScrollSlider from '@jomurgel/native-scroll-slider';
-// or
 import NativeScrollSlider from 'native-scroll-slider';
 ```
 
