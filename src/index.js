@@ -352,7 +352,7 @@ class NativeScrollSlider {
     }
 
     let containerWidth = this.container.offsetWidth;
-    let availableWidth, leftPadding, totalGaps, slideWidth, overflowSlideWidth, totalNeededWidth;
+    let leftPadding, totalGaps, slideWidth, overflowSlideWidth, totalNeededWidth;
 
     // Handle pull-to-right mode
     if (this.currentOptions.showOverflow) {
@@ -395,8 +395,6 @@ class NativeScrollSlider {
         slideWidth = calculatedSlideWidth;
       }
 
-      availableWidth = effectiveWidth;
-
       // Don't add additional padding - we already set it in updatePullToRightPadding
       leftPadding = 0;
     } else {
@@ -415,18 +413,15 @@ class NativeScrollSlider {
         if (this.currentOptions.centerMode) {
           // For center mode, center the content within container
           leftPadding = Math.max(0, (containerWidth - totalNeededWidth) / 2);
-          availableWidth = totalNeededWidth;
         } else {
           // For non-center mode, allow overflow - align left with minimal padding
           leftPadding = Math.max(0, (containerWidth - totalNeededWidth) / 2);
-          availableWidth = totalNeededWidth;
         }
       } else {
         // No minWidth constraint or already meets it
         slideWidth = calculatedSlideWidth;
         totalNeededWidth = (slideWidth * this.currentOptions.slidesToShow) + totalGaps;
         leftPadding = Math.max(0, (containerWidth - totalNeededWidth) / 2);
-        availableWidth = totalNeededWidth;
       }
 
       // Apply padding to track
