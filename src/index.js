@@ -13,13 +13,13 @@
 class NativeScrollSlider {
 
   /**
-       * Initialize the slider.
-       *
-       * @constructor
-       * @param {HTMLElement} trackElement - The track element containing the slides.
-       * @param {Object} options - The options for the slider.
-       * @returns {void}
-       */
+     * Initialize the slider.
+     *
+     * @constructor
+     * @param {HTMLElement} trackElement - The track element containing the slides.
+     * @param {Object} options - The options for the slider.
+     * @returns {void}
+     */
   constructor(trackElement, options = {}) {
     // Safety checks
     if (!trackElement) {
@@ -58,11 +58,11 @@ class NativeScrollSlider {
   }
 
   /**
-       * Find the container element by looking up the DOM tree
-       *
-       * @param {HTMLElement} trackElement
-       * @returns {HTMLElement}
-       */
+     * Find the container element by looking up the DOM tree
+     *
+     * @param {HTMLElement} trackElement
+     * @returns {HTMLElement}
+     */
   findContainer(trackElement) {
     let element = trackElement;
 
@@ -79,11 +79,11 @@ class NativeScrollSlider {
   }
 
   /**
-       * Build the configuration by merging defaults, data attributes, and passed options
-       *
-       * @param {Object} passedOptions
-       * @returns {Object}
-       */
+     * Build the configuration by merging defaults, data attributes, and passed options
+     *
+     * @param {Object} passedOptions
+     * @returns {Object}
+     */
   buildConfig(passedOptions) {
     // Default configuration
     const defaults = {
@@ -147,11 +147,11 @@ class NativeScrollSlider {
   }
 
   /**
-       * Find navigation button using querySelector
-       *
-       * @param {string} selector
-       * @returns {HTMLElement|null}
-       */
+     * Find navigation button using querySelector
+     *
+     * @param {string} selector
+     * @returns {HTMLElement|null}
+     */
   findNavButton(selector) {
     if (!selector) return null;
 
@@ -172,10 +172,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Initialize the slider.
-       *
-       * @returns {void}
-       */
+     * Initialize the slider.
+     *
+     * @returns {void}
+     */
   init() {
     // Setup responsive settings FIRST
     this.setupResponsive();
@@ -204,10 +204,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Setup basic track styles for horizontal scrolling
-       *
-       * @returns {void}
-       */
+     * Setup basic track styles for horizontal scrolling
+     *
+     * @returns {void}
+     */
   setupTrackStyles() {
     this.track.style.display = 'flex';
     this.track.style.overflowX = 'auto';
@@ -227,20 +227,20 @@ class NativeScrollSlider {
       const style = document.createElement('style');
       style.id = 'native-scroll-slider-styles';
       style.textContent = `
-				  .slider-ready .slider-track::-webkit-scrollbar,
-				  [data-slider-config] > *::-webkit-scrollbar {
-					  display: none;
-				  }
-			  `;
+					.slider-ready .slider-track::-webkit-scrollbar,
+					[data-slider-config] > *::-webkit-scrollbar {
+						display: none;
+					}
+				`;
       document.head.appendChild(style);
     }
   }
 
   /**
-       * Setup pull-to-right styles to break out to viewport width
-       *
-       * @returns {void}
-       */
+     * Setup pull-to-right styles to break out to viewport width
+     *
+     * @returns {void}
+     */
   setupPullToRightStyles() {
     // Break container out to full viewport width
     this.container.style.width = '100vw';
@@ -255,10 +255,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Reset pull-to-right styles when disabled
-       *
-       * @returns {void}
-       */
+     * Reset pull-to-right styles when disabled
+     *
+     * @returns {void}
+     */
   resetPullToRightStyles() {
     // Reset container styles
     this.container.style.width = '';
@@ -277,10 +277,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Update pull-to-right padding based on viewport and container size
-       *
-       * @returns {void}
-       */
+     * Update pull-to-right padding based on viewport and container size
+     *
+     * @returns {void}
+     */
   updatePullToRightPadding() {
     if (!this.currentOptions.showOverflow) {
       return;
@@ -309,10 +309,10 @@ class NativeScrollSlider {
   }
 
   /**
-     * Setup the responsive settings.
-     *
-     * @returns {void}
-     */
+   * Setup the responsive settings.
+   *
+   * @returns {void}
+   */
   setupResponsive() {
     const width = window.innerWidth;
     let currentOptions = Object.assign({}, this.options);
@@ -380,17 +380,12 @@ class NativeScrollSlider {
       if (minSlideWidth > 0 && calculatedSlideWidth < minSlideWidth) {
         slideWidth = minSlideWidth;
 
+        // @todo: determine a better way to handle this in the future. Really nothing to do here at the moment.
         // Calculate how many slides can actually fit at this minimum width
         // For overflow mode, we need to account for the overflow space too
-        const availableForSlides = effectiveWidth - overflowSlideWidth;
-        const maxSlidesAtMinWidth = Math.floor((availableForSlides + this.currentOptions.gap) / (minSlideWidth + this.currentOptions.gap));
-        const actualSlidesToShow = Math.max(1, Math.min(maxSlidesAtMinWidth, this.currentOptions.slidesToShow));
-
-        console.log('showOverflow mode - minSlideWidth forcing layout change:');
-        console.log('- configured slidesToShow:', this.currentOptions.slidesToShow);
-        console.log('- actual slides that fit:', actualSlidesToShow);
-        console.log('- slideWidth:', slideWidth);
-        console.log('- effectiveWidth:', effectiveWidth);
+        // const availableForSlides = effectiveWidth - overflowSlideWidth;
+        // const maxSlidesAtMinWidth = Math.floor((availableForSlides + this.currentOptions.gap) / (minSlideWidth + this.currentOptions.gap));
+        // const actualSlidesToShow = Math.max(1, Math.min(maxSlidesAtMinWidth, this.currentOptions.slidesToShow));
       } else {
         slideWidth = calculatedSlideWidth;
       }
@@ -447,10 +442,10 @@ class NativeScrollSlider {
   }
 
   /**
-     * Parse minSlideWidth from string or number
-     *
-     * @returns {number}
-     */
+   * Parse minSlideWidth from string or number
+   *
+   * @returns {number}
+   */
   parseMinSlideWidth() {
     if (!this.currentOptions.minSlideWidth) return 0;
 
@@ -541,28 +536,85 @@ class NativeScrollSlider {
   }
 
   /**
-     * Setup the bounce back.
-     *
-     * @returns {void}
-     */
+   * Setup the bounce back.
+   *
+   * @returns {void}
+   */
   setupBounceBack() {
     this.setupClonedSlides('bounce');
   }
 
   /**
-     * Setup the true infinite.
-     *
-     * @returns {void}
-     */
+   * Setup the true infinite scroll with a simpler, more reliable approach
+   *
+   * @returns {void}
+   */
   setupTrueInfinite() {
-    this.setupClonedSlides('infinite');
+    // Calculate how many clones we need for smooth infinite scrolling
+    // We need enough clones on each side to handle the maximum scroll distance
+    const containerWidth = this.container.offsetWidth;
+    const slideWidth = this.slides[0].offsetWidth + this.currentOptions.gap;
+    const slidesPerView = Math.ceil(containerWidth / slideWidth);
+
+    // Create enough clones to fill at least 2 viewport widths on each side
+    const clonesNeeded = Math.max(this.totalSlides, slidesPerView * 2);
+
+    this.initialCloneCount = clonesNeeded;
+
+    // Clone slides to the end
+    for (let i = 0; i < clonesNeeded; i++) {
+      const originalIndex = i % this.totalSlides;
+      const clone = this.slides[originalIndex].cloneNode(true);
+      clone.classList.add('cloned', 'infinite-clone');
+      clone.dataset.originalIndex = originalIndex;
+      this.track.appendChild(clone);
+    }
+
+    // Clone slides to the beginning
+    for (let i = 0; i < clonesNeeded; i++) {
+      const originalIndex = (this.totalSlides - 1 - (i % this.totalSlides)) % this.totalSlides;
+      const clone = this.slides[originalIndex].cloneNode(true);
+      clone.classList.add('cloned', 'infinite-clone');
+      clone.dataset.originalIndex = originalIndex;
+      this.track.insertBefore(clone, this.track.firstChild);
+    }
+
+    this.allSlides = Array.from(this.track.children);
+
+    // Set initial position after DOM updates
+    const self = this;
+    setTimeout(() => {
+      self.calculateSlidePositions();
+
+      // Start in the middle section (original slides)
+      const startIndex = clonesNeeded + self.currentOptions.startSlide;
+      let initialPosition = self.slidePositions[startIndex];
+
+      // Apply centerMode calculations if needed
+      if (self.currentOptions.centerMode) {
+        const trackStyles = window.getComputedStyle(self.track);
+        const trackPaddingLeft = parseFloat(trackStyles.paddingLeft) || 0;
+        const trackPaddingRight = parseFloat(trackStyles.paddingRight) || 0;
+        const visibleTrackWidth = self.track.offsetWidth - trackPaddingLeft - trackPaddingRight;
+        const slideWidth = self.slides[0].offsetWidth;
+        initialPosition = initialPosition - (visibleTrackWidth / 2) + (slideWidth / 2);
+      }
+
+      // Disable smooth scrolling temporarily for initial positioning
+      self.track.style.scrollBehavior = 'auto';
+      self.track.scrollLeft = initialPosition;
+      self.track.style.scrollBehavior = 'smooth';
+
+      self.currentSlide = self.currentOptions.startSlide;
+      self.infiniteScrollSetup = true;
+    }, 10);
   }
 
   /**
-       * Calculate the slide positions.
-       *
-       * @returns {void}
-       */
+     * Calculate the slide positions.
+     *
+     * @returns {void}
+     */
   calculateSlidePositions() {
     this.slidePositions = [];
     const slidesToUse = this.allSlides || this.slides;
@@ -574,21 +626,28 @@ class NativeScrollSlider {
   }
 
   /**
-       * Setup the scroll listener.
-       *
-       * @returns {void}
-       */
+   * Enhanced scroll listener for infinite scroll
+   *
+   * @returns {void}
+   */
   setupScrollListener() {
     const self = this;
+
     this.track.addEventListener('scroll', () => {
       self.isScrolling = true;
       self.pauseAutoplay();
 
-      clearTimeout(self.scrollTimeout);
+      // Handle infinite scroll with debouncing
+      if (self.currentOptions.infinite) {
+        clearTimeout(self.infiniteScrollTimeout);
+        self.infiniteScrollTimeout = setTimeout(() => {
+          self.handleInfiniteScroll();
+        }, 50); // Quick response for seamless experience
+      }
 
+      clearTimeout(self.scrollTimeout);
       self.scrollTimeout = setTimeout(() => {
         self.isScrolling = false;
-        self.handleScrollEnd();
         self.resumeAutoplay();
       }, 150);
 
@@ -654,10 +713,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Handle the scroll end.
-       *
-       * @returns {void}
-       */
+     * Handle the scroll end.
+     *
+     * @returns {void}
+     */
   handleScrollEnd() {
     if (this.currentOptions.bounceBack) {
       this.handleBounceBackScroll();
@@ -667,10 +726,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Handle the bounce back scroll.
-       *
-       * @returns {void}
-       */
+     * Handle the bounce back scroll.
+     *
+     * @returns {void}
+     */
   handleBounceBackScroll() {
     const cloneCount = Math.max(this.currentOptions.slidesToShow, 2);
     const scrollLeft = this.track.scrollLeft;
@@ -686,227 +745,38 @@ class NativeScrollSlider {
   }
 
   /**
-       * Handle the infinite scroll.
-       *
-       * @returns {void}
-       */
+   * Handle infinite scroll with seamless looping
+   *
+   * @returns {void}
+   */
   handleInfiniteScroll() {
-    const scrollLeft = this.track.scrollLeft;
-    const containerWidth = this.container.offsetWidth;
-
-    // Buffer distance - when to add more clones (1 viewport width)
-    const addBuffer = containerWidth;
-    // Max clones to keep (prevent infinite growth)
-    const maxClones = this.totalSlides * 3;
-
-    // Check if we need more clones at the end
-    const trackWidth = this.track.scrollWidth;
-    const distanceFromEnd = trackWidth - (scrollLeft + containerWidth);
-
-    if (distanceFromEnd < addBuffer) {
-      const currentClones = this.track.querySelectorAll('.infinite-clone').length;
-      if (currentClones < maxClones) {
-        this.addClonesAtEnd();
-      }
-    }
-
-    // Check if we need more clones at the beginning
-    if (scrollLeft < addBuffer) {
-      const currentClones = this.track.querySelectorAll('.infinite-clone').length;
-      if (currentClones < maxClones) {
-        this.addClonesAtStart();
-      }
-    }
-
-    // Clean up distant clones (more than 3 viewport widths away)
-    this.cleanupDistantClones();
-  }
-
-  /**
-       * Add clones at the end.
-       *
-       * @returns {void}
-       */
-  addClonesAtEnd() {
-    // Add one full cycle of slides.
-    for (let i = 0; i < this.totalSlides; i++) {
-      const clone = this.slides[i].cloneNode(true);
-      clone.classList.add('cloned', 'infinite-clone');
-      clone.dataset.originalIndex = i;
-      this.track.appendChild(clone);
-    }
-
-    this.allSlides = Array.from(this.track.children);
-    this.calculateSlidePositions();
-  }
-
-  /**
-       * Add clones at the start.
-       *
-       * @returns {void}
-       */
-  addClonesAtStart() {
-    const currentScrollLeft = this.track.scrollLeft;
-    let addedWidth = 0;
-
-    // Add one full cycle of slides at the beginning
-    for (let i = this.totalSlides - 1; i >= 0; i--) {
-      const clone = this.slides[i].cloneNode(true);
-      clone.classList.add('cloned', 'infinite-clone');
-      clone.dataset.originalIndex = i;
-      this.track.insertBefore(clone, this.track.firstChild);
-
-      // Calculate added width for scroll adjustment.
-      addedWidth += clone.offsetWidth + this.currentOptions.gap;
-    }
-
-    this.allSlides = Array.from(this.track.children);
-
-    // Adjust scroll position to maintain current view.
-    this.track.scrollLeft = currentScrollLeft + addedWidth;
-
-    this.calculateSlidePositions();
-  }
-
-  /**
-       * Cleanup clones specifically for autoplay to prevent infinite growth
-       *
-       * @returns {void}
-       */
-  cleanupClonesForAutoplay() {
-    const clones = this.track.querySelectorAll('.infinite-clone');
-    const maxAllowedClones = this.totalSlides * 4; // Allow 4 full cycles max
-
-    if (clones.length <= maxAllowedClones) {
-      return; // Not enough clones to worry about cleanup yet
-    }
+    if (!this.infiniteScrollSetup) return;
 
     const scrollLeft = this.track.scrollLeft;
-    const containerWidth = this.container.offsetWidth;
-    const keepBuffer = containerWidth * 2; // Keep 2 viewport widths on each side
+    const slideWidth = this.slides[0].offsetWidth + this.currentOptions.gap;
+    const totalOriginalWidth = this.totalSlides * slideWidth;
 
-    const clonesToRemove = [];
+    // Calculate the boundaries where we need to "teleport"
+    const leftBoundary = slideWidth * 2; // 2 slides worth of buffer
+    const rightBoundary = this.slidePositions[this.initialCloneCount + this.totalSlides] - slideWidth * 2;
 
-    // Find clones that are far from current viewport
-    clones.forEach((clone) => {
-      const cloneLeft = clone.offsetLeft;
-      const cloneRight = cloneLeft + clone.offsetWidth;
-      const viewportLeft = scrollLeft - keepBuffer;
-      const viewportRight = scrollLeft + containerWidth + keepBuffer;
-
-      // Remove if clone is completely outside the keep buffer
-      if (cloneRight < viewportLeft || cloneLeft > viewportRight) {
-        clonesToRemove.push(clone);
-      }
-    });
-
-    // Remove from farthest to closest to maintain scroll position
-    clonesToRemove.sort((a, b) => {
-      const distanceA = Math.abs((a.offsetLeft + a.offsetWidth / 2) - (scrollLeft + containerWidth / 2));
-      const distanceB = Math.abs((b.offsetLeft + b.offsetWidth / 2) - (scrollLeft + containerWidth / 2));
-      return distanceB - distanceA;
-    });
-
-    // Remove clones but keep minimum buffer
-    const maxToRemove = Math.max(0, clonesToRemove.length - this.totalSlides);
-    let scrollAdjustment = 0;
-
-    for (let i = 0; i < Math.min(clonesToRemove.length, maxToRemove); i++) {
-      const clone = clonesToRemove[i];
-
-      // If removing clone before current position, adjust scroll
-      if (clone.offsetLeft < scrollLeft) {
-        scrollAdjustment += clone.offsetWidth + this.currentOptions.gap;
-      }
-
-      clone.remove();
+    // If we've scrolled too far left, jump to the equivalent position on the right
+    if (scrollLeft <= leftBoundary) {
+      const equivalentPosition = scrollLeft + totalOriginalWidth;
+      this.seamlessJump(equivalentPosition);
     }
-
-    // Adjust scroll position if we removed clones before current view
-    if (scrollAdjustment > 0) {
-      this.track.scrollLeft = scrollLeft - scrollAdjustment;
-    }
-
-    // Update references
-    if (clonesToRemove.length > 0) {
-      this.allSlides = Array.from(this.track.children);
-      this.calculateSlidePositions();
+    // If we've scrolled too far right, jump to the equivalent position on the left
+    else if (scrollLeft >= rightBoundary) {
+      const equivalentPosition = scrollLeft - totalOriginalWidth;
+      this.seamlessJump(equivalentPosition);
     }
   }
 
   /**
-       * Cleanup the distant clones.
-       *
-       * @returns {void}
-       */
-  cleanupDistantClones() {
-    // Use the more aggressive cleanup for autoplay scenarios
-    if (this.currentOptions.autoplay) {
-      this.cleanupClonesForAutoplay();
-      return;
-    }
-
-    // Original cleanup logic for manual scrolling
-    let scrollLeft = this.track.scrollLeft;
-    const containerWidth = this.container.offsetWidth;
-    const cleanupDistance = containerWidth * 4; // Keep clones within 4 viewport widths
-
-    const clonesToRemove = [];
-    const self = this;
-
-    this.allSlides.forEach((slide, index) => {
-      if (slide.classList.contains('infinite-clone')) {
-        const slidePosition = self.slidePositions[index];
-        const distanceFromViewport = Math.abs(slidePosition - scrollLeft);
-
-        // Remove clones that are far from current view.
-        if (distanceFromViewport > cleanupDistance) {
-          clonesToRemove.push({
-            slide: slide,
-            position: slidePosition,
-            index: index
-          });
-        }
-      }
-    });
-
-    // Sort by distance and remove the farthest clones first.
-    clonesToRemove.sort((a, b) => {
-      const distanceA = Math.abs(a.position - scrollLeft);
-      const distanceB = Math.abs(b.position - scrollLeft);
-      return distanceB - distanceA;
-    });
-
-    // Remove clones but keep a minimum buffer.
-    const minClonesPerSide = this.totalSlides;
-    let removedCount = 0;
-    const maxToRemove = Math.max(0, clonesToRemove.length - (minClonesPerSide * 2));
-
-    for (let i = 0; i < Math.min(clonesToRemove.length, maxToRemove); i++) {
-      const cloneInfo = clonesToRemove[i];
-
-      // Adjust scroll position if removing clone before current view.
-      if (cloneInfo.position < scrollLeft) {
-        const slideWidth = cloneInfo.slide.offsetWidth + this.currentOptions.gap;
-        this.track.scrollLeft = scrollLeft - slideWidth;
-        scrollLeft = this.track.scrollLeft;
-      }
-
-      cloneInfo.slide.remove();
-      removedCount++;
-    }
-
-    if (removedCount > 0) {
-      this.allSlides = Array.from(this.track.children);
-      this.calculateSlidePositions();
-    }
-  }
-
-  /**
-       * Setup the navigation.
-       *
-       * @returns {void}
-       */
+     * Setup the navigation.
+     *
+     * @returns {void}
+     */
   setupNavigation() {
     const self = this;
     if (this.prevBtn) {
@@ -925,30 +795,11 @@ class NativeScrollSlider {
   }
 
   /**
-       * Setup the autoplay.
-       *
-       * @returns {void}
-       */
-  setupAutoplay() {
-    if (this.currentOptions.autoplay) {
-      this.startAutoplay();
-
-      const self = this;
-      this.container.addEventListener('mouseenter', () => {
-        self.pauseAutoplay();
-      });
-      this.container.addEventListener('mouseleave', () => {
-        self.resumeAutoplay();
-      });
-    }
-  }
-
-  /**
-     * Go to the slide.
-     *
-     * @param {number} slideIndex - The index of the slide to go to.
-     * @returns {void}
-     */
+   * Go to the slide.
+   *
+   * @param {number} slideIndex - The index of the slide to go to.
+   * @returns {void}
+   */
   goToSlide(slideIndex) {
     // For infinite mode, don't use goToSlide - just use next/prev buttons.
     if (this.currentOptions.infinite) {
@@ -991,12 +842,32 @@ class NativeScrollSlider {
   }
 
   /**
-   * Go to the next slide.
+ * Perform a seamless jump to maintain infinite scroll illusion
+ *
+ * @param {number} newPosition - The new scroll position
+ * @returns {void}
+ */
+  seamlessJump(newPosition) {
+    // Temporarily disable smooth scrolling for the jump
+    const originalBehavior = this.track.style.scrollBehavior;
+    this.track.style.scrollBehavior = 'auto';
+
+    // Perform the jump
+    this.track.scrollLeft = newPosition;
+
+    // Re-enable smooth scrolling after a small delay
+    setTimeout(() => {
+      this.track.style.scrollBehavior = originalBehavior || 'smooth';
+    }, 10);
+  }
+
+  /**
+   * Enhanced next method for infinite scroll
    *
    * @returns {void}
    */
   next() {
-    // For infinite mode, just scroll by one slide width.
+    // For infinite mode, just scroll by the specified amount
     if (this.currentOptions.infinite) {
       const slideWidth = this.slides[0].offsetWidth + this.currentOptions.gap;
       const scrollAmount = slideWidth * this.currentOptions.slidesToScroll;
@@ -1015,6 +886,7 @@ class NativeScrollSlider {
       return;
     }
 
+    // Non-infinite mode logic remains the same
     let nextSlide;
     if (this.currentOptions.bounceBack) {
       nextSlide = (this.currentSlide + this.currentOptions.slidesToScroll) % this.totalSlides;
@@ -1029,12 +901,12 @@ class NativeScrollSlider {
   }
 
   /**
-     * Go to the previous slide.
-     *
-     * @returns {void}
-     */
+   * Enhanced prev method for infinite scroll
+   *
+   * @returns {void}
+   */
   prev() {
-    // For infinite mode, just scroll by one slide width.
+    // For infinite mode, just scroll by the specified amount
     if (this.currentOptions.infinite) {
       const slideWidth = this.slides[0].offsetWidth + this.currentOptions.gap;
       const scrollAmount = slideWidth * this.currentOptions.slidesToScroll;
@@ -1053,6 +925,7 @@ class NativeScrollSlider {
       return;
     }
 
+    // Non-infinite mode logic remains the same
     let prevSlide;
     if (this.currentOptions.bounceBack) {
       prevSlide = this.currentSlide - this.currentOptions.slidesToScroll;
@@ -1067,10 +940,10 @@ class NativeScrollSlider {
   }
 
   /**
-     * Find the index of the currently centered slide in infinite mode
-     *
-     * @returns {number}
-     */
+   * Find the index of the currently centered slide in infinite mode
+   *
+   * @returns {number}
+   */
   findCurrentCenterSlideIndex() {
     const scrollLeft = this.track.scrollLeft;
     const trackStyles = window.getComputedStyle(this.track);
@@ -1099,11 +972,11 @@ class NativeScrollSlider {
   }
 
   /**
-     * Go to a specific slide index and center it (for infinite mode)
-     *
-     * @param {number} slideIndex
-     * @returns {void}
-     */
+   * Go to a specific slide index and center it (for infinite mode)
+   *
+   * @param {number} slideIndex
+   * @returns {void}
+   */
   goToCenterSlide(slideIndex) {
     const slidesToUse = this.allSlides || this.slides;
 
@@ -1130,10 +1003,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Update the navigation.
-       *
-       * @returns {void}
-       */
+     * Update the navigation.
+     *
+     * @returns {void}
+     */
   updateNavigation() {
     if (!this.prevBtn || !this.nextBtn) return;
 
@@ -1154,10 +1027,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Update the center mode.
-       *
-       * @returns {void}
-       */
+     * Update the center mode.
+     *
+     * @returns {void}
+     */
   updateCenterMode() {
     if (!this.currentOptions.centerMode) return;
 
@@ -1202,7 +1075,26 @@ class NativeScrollSlider {
   }
 
   /**
-   * Start the autoplay.
+     * Setup the autoplay.
+     *
+     * @returns {void}
+     */
+  setupAutoplay() {
+    if (this.currentOptions.autoplay) {
+      this.startAutoplay();
+
+      const self = this;
+      this.container.addEventListener('mouseenter', () => {
+        self.pauseAutoplay();
+      });
+      this.container.addEventListener('mouseleave', () => {
+        self.resumeAutoplay();
+      });
+    }
+  }
+
+  /**
+   * Enhanced autoplay for infinite scroll
    *
    * @returns {void}
    */
@@ -1215,25 +1107,22 @@ class NativeScrollSlider {
     this.autoplayInterval = setInterval(() => {
       if (!self.isScrolling) {
         if (self.currentOptions.infinite) {
-          // Infinite mode with centerMode support
+          // For infinite mode, always use next() method which handles centerMode properly
+          const slideWidth = self.slides[0].offsetWidth + self.currentOptions.gap;
+          const scrollAmount = slideWidth * self.currentOptions.slidesToScroll;
+
           if (self.currentOptions.centerMode) {
             const currentCenterSlide = self.findCurrentCenterSlideIndex();
             const nextCenterSlide = currentCenterSlide + self.currentOptions.slidesToScroll;
             self.goToCenterSlide(nextCenterSlide);
           } else {
-            const slideWidth = self.slides[0].offsetWidth + self.currentOptions.gap;
-            const scrollAmount = slideWidth * self.currentOptions.slidesToScroll;
             self.track.scrollTo({
               left: self.track.scrollLeft + scrollAmount,
               behavior: 'smooth'
             });
           }
-
-          // Cleanup clones periodically during autoplay
-          self.cleanupClonesForAutoplay();
         } else {
-          // Non-infinite modes (regular, bounceBack) - use next() method
-          // This already handles centerMode properly via goToSlide()
+          // Non-infinite modes use next() method
           self.next();
         }
       }
@@ -1241,10 +1130,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Stop the autoplay.
-       *
-       * @returns {void}
-       */
+     * Stop the autoplay.
+     *
+     * @returns {void}
+     */
   stopAutoplay() {
     if (this.autoplayInterval) {
       clearInterval(this.autoplayInterval);
@@ -1253,20 +1142,20 @@ class NativeScrollSlider {
   }
 
   /**
-       * Pause the autoplay.
-       *
-       * @returns {void}
-       */
+     * Pause the autoplay.
+     *
+     * @returns {void}
+     */
   pauseAutoplay() {
     this.autoplayPaused = true;
     this.stopAutoplay();
   }
 
   /**
-       * Resume the autoplay.
-       *
-       * @returns {void}
-       */
+     * Resume the autoplay.
+     *
+     * @returns {void}
+     */
   resumeAutoplay() {
     if (this.currentOptions.autoplay && this.autoplayPaused) {
       this.autoplayPaused = false;
@@ -1280,10 +1169,10 @@ class NativeScrollSlider {
   }
 
   /**
-       * Handle the resize.
-       *
-       * @returns {void}
-       */
+     * Handle the resize.
+     *
+     * @returns {void}
+     */
   handleResize() {
     const self = this;
     setTimeout(() => {
@@ -1304,7 +1193,6 @@ class NativeScrollSlider {
 
       self.setupSlides();
       self.calculateSlidePositions();
-      self.cleanupClonesForAutoplay();
 
       // Always reposition on resize, but use different logic based on responsive changes.
       if (self.currentOptions.slidesToShow !== previousSlidesToShow) {
@@ -1319,13 +1207,20 @@ class NativeScrollSlider {
   }
 
   /**
-       * Destroy the slider.
-       *
-       * @returns {void}
-       */
+   * Enhanced destroy method to clean up infinite scroll timeouts
+   *
+   * @returns {void}
+   */
   destroy() {
     this.stopAutoplay();
     clearTimeout(this.scrollTimeout);
+    clearTimeout(this.infiniteScrollTimeout);
+
+    // Clean up any cloned slides
+    if (this.track) {
+      const clones = this.track.querySelectorAll('.infinite-clone');
+      clones.forEach(clone => clone.remove());
+    }
   }
 }
 
