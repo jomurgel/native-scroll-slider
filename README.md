@@ -617,13 +617,25 @@ MIT License © 2024 [Jo Murgel](https://github.com/jomurgel) - see [LICENSE](LIC
 
 ### v0.0.1
 - Initial release
-- Core sliding functionality with desktop-first defaults (4 slides)
-- Built-in responsive breakpoints (1200/992/768/576px)
-- Autoplay support with hover pause/resume
-- Infinite scroll mode with dynamic clone management
-- Center mode with visual highlighting
-- Show overflow mode with full-width breakout capability
-- Touch/swipe support via native scroll behavior
+- Core sliding functionality with desktop-first defaults (4 slides).
+- Built-in responsive breakpoints (1200/992/768/576px).
+- Autoplay support with hover pause/resume.
+- Infinite scroll mode with dynamic clone management.
+- Center mode with visual highlighting.
+- Show overflow mode with full-width breakout capability.
+- Touch/swipe support via native scroll behavior.
+
+### v0.0.2
+- Cleanup and minor bugfixes.
+
+### v0.0.3
+- Fixes minWidth handling with centerMode active.
+
+### v0.0.4
+-Improves infinite scroll behavior.
+
+### v0.0.5
+- Improves hanlding of next/previous buttons when the slider container width is variable.
 
 ---
 
