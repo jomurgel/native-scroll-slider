@@ -35,6 +35,8 @@ npm install @jomurgel/native-scroll-slider
 
 ### NPM Imports
 ```js
+import NativeScrollSlider from '@jomurgel/native-scroll-slider';
+// or
 import NativeScrollSlider from 'native-scroll-slider';
 ```
 

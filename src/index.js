@@ -227,11 +227,11 @@ class NativeScrollSlider {
       const style = document.createElement('style');
       style.id = 'native-scroll-slider-styles';
       style.textContent = `
-					.slider-ready .slider-track::-webkit-scrollbar,
-					[data-slider-config] > *::-webkit-scrollbar {
-						display: none;
-					}
-				`;
+						.slider-ready .slider-track::-webkit-scrollbar,
+						[data-slider-config] > *::-webkit-scrollbar {
+							display: none;
+						}
+					`;
       document.head.appendChild(style);
     }
   }
@@ -380,7 +380,6 @@ class NativeScrollSlider {
       if (minSlideWidth > 0 && calculatedSlideWidth < minSlideWidth) {
         slideWidth = minSlideWidth;
 
-        // @todo: determine a better way to handle this in the future. Really nothing to do here at the moment.
         // Calculate how many slides can actually fit at this minimum width
         // For overflow mode, we need to account for the overflow space too
         // const availableForSlides = effectiveWidth - overflowSlideWidth;
@@ -842,11 +841,11 @@ class NativeScrollSlider {
   }
 
   /**
- * Perform a seamless jump to maintain infinite scroll illusion
- *
- * @param {number} newPosition - The new scroll position
- * @returns {void}
- */
+   * Perform a seamless jump to maintain infinite scroll illusion
+   *
+   * @param {number} newPosition - The new scroll position
+   * @returns {void}
+   */
   seamlessJump(newPosition) {
     // Temporarily disable smooth scrolling for the jump
     const originalBehavior = this.track.style.scrollBehavior;
@@ -859,6 +858,24 @@ class NativeScrollSlider {
     setTimeout(() => {
       this.track.style.scrollBehavior = originalBehavior || 'smooth';
     }, 10);
+  }
+
+  /**
+   * Calculate how many slides are actually visible in the current viewport
+   * @returns {number}
+   */
+  getActualSlidesToShow() {
+    if (!this.slides.length) return this.currentOptions.slidesToShow;
+
+    const containerWidth = this.container.offsetWidth;
+    const slideWidth = this.slides[0].offsetWidth;
+    const gap = this.currentOptions.gap;
+
+    // Calculate how many slides actually fit in the visible area
+    const actualSlidesToShow = Math.floor((containerWidth + gap) / (slideWidth + gap));
+
+    // Return the smaller of configured vs actual
+    return Math.min(actualSlidesToShow, this.currentOptions.slidesToShow);
   }
 
   /**
@@ -886,14 +903,17 @@ class NativeScrollSlider {
       return;
     }
 
+    const actualSlidesToShow = this.getActualSlidesToShow();
+
     // Non-infinite mode logic remains the same
     let nextSlide;
     if (this.currentOptions.bounceBack) {
       nextSlide = (this.currentSlide + this.currentOptions.slidesToScroll) % this.totalSlides;
     } else {
+      // Use actualSlidesToShow instead of this.currentOptions.slidesToShow
       nextSlide = Math.min(
         this.currentSlide + this.currentOptions.slidesToScroll,
-        this.totalSlides - this.currentOptions.slidesToShow
+        this.totalSlides - actualSlidesToShow
       );
     }
 
@@ -1010,7 +1030,7 @@ class NativeScrollSlider {
   updateNavigation() {
     if (!this.prevBtn || !this.nextBtn) return;
 
-    // For infinite mode, buttons are always enabled.
+    // For infinite mode, buttons are always enabled
     if (this.currentOptions.infinite) {
       this.prevBtn.disabled = false;
       this.nextBtn.disabled = false;
@@ -1022,7 +1042,14 @@ class NativeScrollSlider {
       this.nextBtn.disabled = false;
     } else {
       this.prevBtn.disabled = this.currentSlide === 0;
-      this.nextBtn.disabled = this.currentSlide >= this.totalSlides - this.currentOptions.slidesToShow;
+
+      // Calculate the actual last scrollable position
+      const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+      const currentScroll = this.track.scrollLeft;
+
+      // Disable next if we can't scroll further right
+      // Add a small buffer (5px) to account for rounding errors
+      this.nextBtn.disabled = currentScroll >= maxScroll - 5;
     }
   }
 
