@@ -1,6 +1,6 @@
 {
   "name": "native-scroll-slider",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A simple slider that leverages native overflow scroll behavior.",
   "license": "MIT",
   "author": "Jo Murgel",

@@ -163,9 +163,17 @@ class NativeScrollSlider {
       button = this.track.querySelector(selector);
     }
 
-    // If still not found, try document (for cases where buttons are outside)
-    if (!button) {
-      button = document.querySelector(selector);
+    // If still not found, look for sibling .slider-controls container
+    if (!button && this.container.parentElement) {
+      const sliderControls = this.container.parentElement.querySelector('.slider-controls');
+      if (sliderControls) {
+        // Look for the specific prev/next button within slider-controls
+        if (selector.includes('prev')) {
+          button = sliderControls.querySelector('.slider-prev');
+        } else if (selector.includes('next')) {
+          button = sliderControls.querySelector('.slider-next');
+        }
+      }
     }
 
     return button;
@@ -227,11 +235,11 @@ class NativeScrollSlider {
       const style = document.createElement('style');
       style.id = 'native-scroll-slider-styles';
       style.textContent = `
-						.slider-ready .slider-track::-webkit-scrollbar,
-						[data-slider-config] > *::-webkit-scrollbar {
-							display: none;
-						}
-					`;
+						  .slider-ready .slider-track::-webkit-scrollbar,
+						  [data-slider-config] > *::-webkit-scrollbar {
+							  display: none;
+						  }
+					  `;
       document.head.appendChild(style);
     }
   }
