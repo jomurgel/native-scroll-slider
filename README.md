@@ -637,6 +637,8 @@ MIT License © 2024 [Jo Murgel](https://github.com/jomurgel) - see [LICENSE](LIC
 ### v0.0.5
 - Improves hanlding of next/previous buttons when the slider container width is variable.
 
+### v0.0.6
+- Fixes bug where nav buttons were being ignored when multiple sliders are present.
 ---
 
 **Made with ❤️ by [jomurgel](https://github.com/jomurgel)**
