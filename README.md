@@ -11,6 +11,7 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 - 🪶 **Ultra-lightweight**: Only ~3.7KB (~0.5KB gzipped) - 90% smaller than alternatives
 - 🚀 **Native performance**: Uses browser's native scrolling for 60fps animations
 - 📱 **Touch-friendly**: Built-in touch/swipe support without additional libraries
+- 👆 **Native scrolling**: Touch and mouse drag scrolling work naturally - no hijacked events
 - 🎨 **Highly configurable**: 20+ options for complete customization
 - 📐 **Responsive**: Built-in responsive breakpoints and adaptive layouts
 - ♿ **Accessible**: Keyboard navigation and screen reader friendly
@@ -504,7 +505,8 @@ const peekSlider = new NativeScrollSlider(track, {
 
 - **Smallest footprint**: 90% smaller than alternatives
 - **Native performance**: Leverages browser optimizations
-- **Touch-first**: Built-in mobile gestures
+- **Touch-first**: Built-in mobile gestures with natural drag/swipe behavior
+- **No hijacked scrolling**: Touch and mouse events work as expected - just like any native scrolling container
 - **Accessibility**: Works with screen readers and keyboards
 - **Future-proof**: Uses web standards, not polyfills
 
