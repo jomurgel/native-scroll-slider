@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Native Scroll Slider - Demos</title>
+
+  <!-- Acorn CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/acorn.css@latest/dist/acorn.min.css">
+
+  <style>
+    /* Custom root variables for slider demos */
+    :root {
+      --hero-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      --gradient-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      --gradient-6: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+      --gradient-7: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      --gradient-8: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      --gradient-9: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      --gradient-10: linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%);
+      --gradient-11: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+      --gradient-12: linear-gradient(135deg, #f8b500 0%, #fceabb 100%);
+
+      --primary: #667eea;
+    }
+
+    body {
+      padding-bottom: 0;
+      padding-top: 0;
+    }
+
+    .demo-section {
+      margin: var(--space-4) 0;
+    }
+
+    .demo-header {
+      margin-bottom: var(--space-2);
+      padding-bottom: var(--space-2);
+      border-bottom: 2px solid var(--light-gray);
+    }
+
+    .demo-header h2 {
+      margin-bottom: var(--space-1);
+      color: var(--black);
+    }
+
+    .demo-header p {
+      color: var(--gray);
+      margin: 0;
+    }
+
+    .slider-container {
+      margin: var(--space-2) 0;
+      position: relative;
+    }
+
+    .slider-track {
+      -ms-overflow-style: none;
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .slider-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slide {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 600;
+      font-size: var(--text-xl);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      min-height: 300px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .slide-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: var(--space-3);
+    }
+
+    .slide-number {
+      font-size: var(--text-3xl);
+      font-weight: 700;
+      margin-bottom: var(--space-1);
+    }
+
+    /* Gradient backgrounds */
+    .gradient-1 {
+      background: var(--gradient-1);
+    }
+
+    .gradient-2 {
+      background: var(--gradient-2);
+    }
+
+    .gradient-3 {
+      background: var(--gradient-3);
+    }
+
+    .gradient-4 {
+      background: var(--gradient-4);
+    }
+
+    .gradient-5 {
+      background: var(--gradient-5);
+    }
+
+    .gradient-6 {
+      background: var(--gradient-6);
+    }
+
+    .gradient-7 {
+      background: var(--gradient-7);
+    }
+
+    .gradient-8 {
+      background: var(--gradient-8);
+    }
+
+    .gradient-9 {
+      background: var(--gradient-9);
+    }
+
+    .gradient-10 {
+      background: var(--gradient-10);
+    }
+
+    .gradient-11 {
+      background: var(--gradient-11);
+    }
+
+    .gradient-12 {
+      background: var(--gradient-12);
+    }
+
+    .slider-nav {
+      display: flex;
+      gap: var(--space-1);
+      justify-content: center;
+      margin-top: var(--space-2);
+    }
+
+    .slider-prev,
+    .slider-next {
+      padding: var(--space-2) var(--space-3);
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .slider-prev:hover,
+    .slider-next:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .slider-prev:disabled,
+    .slider-next:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .code-comment {
+      color: #9ca3af;
+    }
+
+    .code-property {
+      color: #f472b6;
+    }
+
+    .code-value {
+      color: #60a5fa;
+    }
+
+    .code-string {
+      color: #34d399;
+    }
+
+    .code-keyword {
+      color: #a78bfa;
+    }
+
+    .center-mode .slide {
+      opacity: 0.5;
+      transform: scale(0.85);
+    }
+
+    .center-mode .slide.center {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Unstyled slides - show completely raw HTML */
+    body.unstyled-slides .slide {
+      background: none !important;
+      color: initial !important;
+      min-height: auto !important;
+      border: none !important;
+      box-shadow: none !important;
+      text-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      display: block !important;
+      align-items: initial !important;
+      justify-content: initial !important;
+      font-weight: initial !important;
+      font-size: initial !important;
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    body.unstyled-slides .slide-content {
+      padding: 0 !important;
+      z-index: auto !important;
+      text-align: left !important;
+      position: static !important;
+    }
+
+    body.unstyled-slides .slide-number {
+      font-size: initial !important;
+      font-weight: initial !important;
+      margin-bottom: 0 !important;
+      color: initial !important;
+    }
+
+    body.unstyled-slides .slider-prev,
+    body.unstyled-slides .slider-next {
+      padding: 0 !important;
+      background: none !important;
+      color: initial !important;
+      border: none !important;
+      border-radius: 0 !important;
+      cursor: auto !important;
+      font-weight: initial !important;
+      transition: none !important;
+    }
+
+    body.unstyled-slides .slider-prev:hover,
+    body.unstyled-slides .slider-next:hover {
+      background: none !important;
+      transform: none !important;
+    }
+
+    body.unstyled-slides .slider-prev:disabled,
+    body.unstyled-slides .slider-next:disabled {
+      opacity: 1 !important;
+      cursor: auto !important;
+    }
+
+    .hero {
+      background: var(--hero-gradient);
+      color: var(--white);
+      padding: var(--space-4) 0;
+      text-align: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .hero h1 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero p {
+      font-size: var(--text-lg);
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: var(--space-1);
+      margin-top: var(--space-3);
+    }
+
+    .badge span {
+      background: rgba(255, 255, 255, 0.2);
+      padding: var(--space-1) var(--space-2);
+      border-radius: 999px;
+      font-size: var(--text-sm);
+      backdrop-filter: blur(10px);
+    }
+
+    .github-corner {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 100;
+    }
+
+    .github-corner img {
+      border-radius: 0;
+      width: 80px;
+      height: 80px;
+    }
+
+    .acorn-logo {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 auto var(--space-2);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- GitHub corner -->
+  <a href="https://github.com/jomurgel/native-scroll-slider" class="github-corner" aria-label="View source on GitHub">
+    <img src="/github-corner.svg" alt="GitHub corner" title="View on GitHub">
+  </a>
+
+  <!-- Hero Section -->
+  <div class="hero" data-container="full">
+    <div data-container>
+      <img src="/acorn.svg" alt="Acorn CSS Logo" class="acorn-logo">
+      <h1>Native Scroll Slider</h1>
+      <p>A lightweight, dependency-free JavaScript slider that leverages native browser scrolling for smooth, performant
+        carousel experiences.</p>
+      <div class="badge">
+        <span>16KB minified</span>
+        <span>Native Performance</span>
+        <span>Touch Friendly</span>
+      </div>
+    </div>
+  </div>
+
+  <div data-container>
+
+    <!-- Native Approach Section -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>Native CSS Approach</h2>
+        <p>This slider leverages native browser overflow scrolling - no DOM manipulation required</p>
+      </div>
+
+      <p>Unlike other sliders, this library doesn't rewrite your DOM or add unnecessary markup. It works with a simple
+        <code>overflow: auto</code> container and enhances it with JavaScript controls. You keep full control over your
+        HTML structure and styling.</p>
+
+      <p>The demos below use custom gradient styles for visual appeal, but the slider works with any HTML content.
+        Toggle the styles below to see the raw HTML structure:</p>
+
+      <button id="toggle-styles" data-button>Turn OFF Slider Demo Styles</button>
+    </section>
+
+    <!-- Demo 1: Basic Slider -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>1. Basic Slider</h2>
+        <p>Simple slider showing 3 slides at once with navigation buttons</p>
+      </div>
+
+      <div class="slider-container" id="basic-slider">
+        <div class="slider-track">
+          <div class="slide gradient-1">
+            <div class="slide-content">
+              <div class="slide-number">1</div>
+              <div>Warm Flame</div>
+            </div>
+          </div>
+          <div class="slide gradient-2">
+            <div class="slide-content">
+              <div class="slide-number">2</div>
+              <div>Night Fade</div>
+            </div>
+          </div>
+          <div class="slide gradient-3">
+            <div class="slide-content">
+              <div class="slide-number">3</div>
+              <div>Spring Warmth</div>
+            </div>
+          </div>
+          <div class="slide gradient-4">
+            <div class="slide-content">
+              <div class="slide-number">4</div>
+              <div>Juicy Peach</div>
+            </div>
+          </div>
+          <div class="slide gradient-5">
+            <div class="slide-content">
+              <div class="slide-number">5</div>
+              <div>Young Passion</div>
+            </div>
+          </div>
+          <div class="slide gradient-6">
+            <div class="slide-content">
+              <div class="slide-number">6</div>
+              <div>Lady Lips</div>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="slider-prev">← Prev</button>
+          <button class="slider-next">Next →</button>
+        </div>
+      </div>
+
+      <pre><code><span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> <span class="code-value">NativeScrollSlider</span>(document.querySelector(<span class="code-string">'#basic-slider .slider-track'</span>), {
+  <span class="code-property">slidesToShow</span>: <span class="code-value">3</span>,
+  <span class="code-property">slidesToScroll</span>: <span class="code-value">1</span>,
+  <span class="code-property">gap</span>: <span class="code-value">20</span>
+});</code></pre>
+    </section>
+
+    <!-- Demo 2: Autoplay Slider -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>2. Autoplay Slider</h2>
+        <p>Automatically advances slides every 3 seconds (pauses on hover)</p>
+      </div>
+
+      <div class="slider-container" id="autoplay-slider">
+        <div class="slider-track">
+          <div class="slide gradient-7">
+            <div class="slide-content">
+              <div class="slide-number">1</div>
+              <div>Sunny Morning</div>
+            </div>
+          </div>
+          <div class="slide gradient-8">
+            <div class="slide-content">
+              <div class="slide-number">2</div>
+              <div>Rainy Ashville</div>
+            </div>
+          </div>
+          <div class="slide gradient-9">
+            <div class="slide-content">
+              <div class="slide-number">3</div>
+              <div>Frozen Dreams</div>
+            </div>
+          </div>
+          <div class="slide gradient-10">
+            <div class="slide-content">
+              <div class="slide-number">4</div>
+              <div>Winter Neva</div>
+            </div>
+          </div>
+          <div class="slide gradient-11">
+            <div class="slide-content">
+              <div class="slide-number">5</div>
+              <div>Dusty Grass</div>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="slider-prev">← Prev</button>
+          <button class="slider-next">Next →</button>
+        </div>
+      </div>
+
+      <pre><code><span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> <span class="code-value">NativeScrollSlider</span>(document.querySelector(<span class="code-string">'#autoplay-slider .slider-track'</span>), {
+  <span class="code-property">slidesToShow</span>: <span class="code-value">2</span>,
+  <span class="code-property">autoplay</span>: <span class="code-value">true</span>,
+  <span class="code-property">autoplaySpeed</span>: <span class="code-value">3000</span>
+});</code></pre>
+    </section>
+
+    <!-- Demo 3: Infinite Scroll -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>3. Infinite Scroll</h2>
+        <p>Seamlessly loops through slides for endless scrolling</p>
+      </div>
+
+      <div class="slider-container" id="infinite-slider">
+        <div class="slider-track">
+          <div class="slide gradient-1">
+            <div class="slide-content">
+              <div class="slide-number">1</div>
+              <div>Warm Flame</div>
+            </div>
+          </div>
+          <div class="slide gradient-2">
+            <div class="slide-content">
+              <div class="slide-number">2</div>
+              <div>Night Fade</div>
+            </div>
+          </div>
+          <div class="slide gradient-3">
+            <div class="slide-content">
+              <div class="slide-number">3</div>
+              <div>Spring Warmth</div>
+            </div>
+          </div>
+          <div class="slide gradient-4">
+            <div class="slide-content">
+              <div class="slide-number">4</div>
+              <div>Juicy Peach</div>
+            </div>
+          </div>
+          <div class="slide gradient-5">
+            <div class="slide-content">
+              <div class="slide-number">5</div>
+              <div>Young Passion</div>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="slider-prev">← Prev</button>
+          <button class="slider-next">Next →</button>
+        </div>
+      </div>
+
+      <pre><code><span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> <span class="code-value">NativeScrollSlider</span>(document.querySelector(<span class="code-string">'#infinite-slider .slider-track'</span>), {
+  <span class="code-property">slidesToShow</span>: <span class="code-value">3</span>,
+  <span class="code-property">infinite</span>: <span class="code-value">true</span>,
+  <span class="code-property">autoplay</span>: <span class="code-value">true</span>
+});</code></pre>
+    </section>
+
+    <!-- Demo 4: Center Mode -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>4. Center Mode</h2>
+        <p>Centers the active slide with visual highlighting</p>
+      </div>
+
+      <div class="slider-container center-mode" id="center-slider">
+        <div class="slider-track">
+          <div class="slide gradient-6">
+            <div class="slide-content">
+              <div class="slide-number">1</div>
+              <div>Lady Lips</div>
+            </div>
+          </div>
+          <div class="slide gradient-7">
+            <div class="slide-content">
+              <div class="slide-number">2</div>
+              <div>Sunny Morning</div>
+            </div>
+          </div>
+          <div class="slide gradient-8">
+            <div class="slide-content">
+              <div class="slide-number">3</div>
+              <div>Rainy Ashville</div>
+            </div>
+          </div>
+          <div class="slide gradient-9">
+            <div class="slide-content">
+              <div class="slide-number">4</div>
+              <div>Frozen Dreams</div>
+            </div>
+          </div>
+          <div class="slide gradient-10">
+            <div class="slide-content">
+              <div class="slide-number">5</div>
+              <div>Winter Neva</div>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="slider-prev">← Prev</button>
+          <button class="slider-next">Next →</button>
+        </div>
+      </div>
+
+      <pre><code><span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> <span class="code-value">NativeScrollSlider</span>(document.querySelector(<span class="code-string">'#center-slider .slider-track'</span>), {
+  <span class="code-property">slidesToShow</span>: <span class="code-value">1</span>,
+  <span class="code-property">centerMode</span>: <span class="code-value">true</span>,
+  <span class="code-property">infinite</span>: <span class="code-value">true</span>
+});</code></pre>
+    </section>
+
+    <!-- Demo 5: Responsive Slider -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>5. Responsive Slider</h2>
+        <p>Adapts to different screen sizes with custom breakpoints</p>
+      </div>
+
+      <div class="slider-container" id="responsive-slider">
+        <div class="slider-track">
+          <div class="slide gradient-1">
+            <div class="slide-content">
+              <div class="slide-number">1</div>
+              <div>Slide 1</div>
+            </div>
+          </div>
+          <div class="slide gradient-2">
+            <div class="slide-content">
+              <div class="slide-number">2</div>
+              <div>Slide 2</div>
+            </div>
+          </div>
+          <div class="slide gradient-3">
+            <div class="slide-content">
+              <div class="slide-number">3</div>
+              <div>Slide 3</div>
+            </div>
+          </div>
+          <div class="slide gradient-4">
+            <div class="slide-content">
+              <div class="slide-number">4</div>
+              <div>Slide 4</div>
+            </div>
+          </div>
+          <div class="slide gradient-5">
+            <div class="slide-content">
+              <div class="slide-number">5</div>
+              <div>Slide 5</div>
+            </div>
+          </div>
+          <div class="slide gradient-6">
+            <div class="slide-content">
+              <div class="slide-number">6</div>
+              <div>Slide 6</div>
+            </div>
+          </div>
+          <div class="slide gradient-7">
+            <div class="slide-content">
+              <div class="slide-number">7</div>
+              <div>Slide 7</div>
+            </div>
+          </div>
+          <div class="slide gradient-8">
+            <div class="slide-content">
+              <div class="slide-number">8</div>
+              <div>Slide 8</div>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="slider-prev">← Prev</button>
+          <button class="slider-next">Next →</button>
+        </div>
+      </div>
+
+      <pre><code><span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> <span class="code-value">NativeScrollSlider</span>(document.querySelector(<span class="code-string">'#responsive-slider .slider-track'</span>), {
+  <span class="code-property">slidesToShow</span>: <span class="code-value">4</span>,
+  <span class="code-property">responsive</span>: [
+    {
+      <span class="code-property">breakpoint</span>: <span class="code-value">1200</span>,
+      <span class="code-property">settings</span>: { <span class="code-property">slidesToShow</span>: <span class="code-value">3</span> }
+    },
+    {
+      <span class="code-property">breakpoint</span>: <span class="code-value">992</span>,
+      <span class="code-property">settings</span>: { <span class="code-property">slidesToShow</span>: <span class="code-value">2</span> }
+    },
+    {
+      <span class="code-property">breakpoint</span>: <span class="code-value">768</span>,
+      <span class="code-property">settings</span>: { <span class="code-property">slidesToShow</span>: <span class="code-value">1</span> }
+    }
+  ]
+});</code></pre>
+    </section>
+
+    <!-- Demo 6: Show Overflow Mode -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>6. Show Overflow Mode</h2>
+        <p>Peek at next/previous slides to indicate more content</p>
+      </div>
+
+      <div class="slider-container" id="overflow-slider">
+        <div class="slider-track">
+          <div class="slide gradient-11">
+            <div class="slide-content">
+              <div class="slide-number">1</div>
+              <div>Dusty Grass</div>
+            </div>
+          </div>
+          <div class="slide gradient-12">
+            <div class="slide-content">
+              <div class="slide-number">2</div>
+              <div>Golden Hour</div>
+            </div>
+          </div>
+          <div class="slide gradient-1">
+            <div class="slide-content">
+              <div class="slide-number">3</div>
+              <div>Warm Flame</div>
+            </div>
+          </div>
+          <div class="slide gradient-2">
+            <div class="slide-content">
+              <div class="slide-number">4</div>
+              <div>Night Fade</div>
+            </div>
+          </div>
+          <div class="slide gradient-3">
+            <div class="slide-content">
+              <div class="slide-number">5</div>
+              <div>Spring Warmth</div>
+            </div>
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button class="slider-prev">← Prev</button>
+          <button class="slider-next">Next →</button>
+        </div>
+      </div>
+
+      <pre><code><span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> <span class="code-value">NativeScrollSlider</span>(document.querySelector(<span class="code-string">'#overflow-slider .slider-track'</span>), {
+  <span class="code-property">slidesToShow</span>: <span class="code-value">2</span>,
+  <span class="code-property">showOverflow</span>: <span class="code-value">true</span>,
+  <span class="code-property">overflowAmount</span>: <span class="code-value">0.3</span>
+});</code></pre>
+    </section>
+
+    <!-- Installation & Usage -->
+    <section class="demo-section">
+      <div class="demo-header">
+        <h2>Installation & Usage</h2>
+        <p>Get started with Native Scroll Slider in your project</p>
+      </div>
+
+      <h3 style="margin-top: var(--space-3);">NPM Installation</h3>
+      <pre><code>npm install native-scroll-slider</code></pre>
+
+      <h3 style="margin-top: var(--space-3);">CDN Usage</h3>
+      <pre><code><span class="code-keyword">&lt;script</span> <span class="code-property">src</span>=<span class="code-string">"https://unpkg.com/native-scroll-slider/dist/native-scroll-slider.min.js"</span><span class="code-keyword">&gt;&lt;/script&gt;</span></code></pre>
+
+      <h3 style="margin-top: var(--space-3);">Basic HTML Structure</h3>
+      <pre><code><span class="code-keyword">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"slider-container"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"slider-track"</span><span class="code-keyword">&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"slide"</span><span class="code-keyword">&gt;</span>Slide 1<span class="code-keyword">&lt;/div&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"slide"</span><span class="code-keyword">&gt;</span>Slide 2<span class="code-keyword">&lt;/div&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"slide"</span><span class="code-keyword">&gt;</span>Slide 3<span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;button</span> <span class="code-property">class</span>=<span class="code-string">"slider-prev"</span><span class="code-keyword">&gt;</span>Previous<span class="code-keyword">&lt;/button&gt;</span>
+  <span class="code-keyword">&lt;button</span> <span class="code-property">class</span>=<span class="code-string">"slider-next"</span><span class="code-keyword">&gt;</span>Next<span class="code-keyword">&lt;/button&gt;</span>
+<span class="code-keyword">&lt;/div&gt;</span></code></pre>
+
+      <h3 style="margin-top: var(--space-3);">Initialize JavaScript</h3>
+      <pre><code><span class="code-keyword">import</span> NativeScrollSlider <span class="code-keyword">from</span> <span class="code-string">'native-scroll-slider'</span>;
+
+<span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> <span class="code-value">NativeScrollSlider</span>(
+  document.querySelector(<span class="code-string">'.slider-track'</span>),
+  {
+    <span class="code-property">slidesToShow</span>: <span class="code-value">3</span>,
+    <span class="code-property">autoplay</span>: <span class="code-value">true</span>
+  }
+);</code></pre>
+
+      <h3 style="margin-top: var(--space-3);">Configuration Options</h3>
+      <p>All available configuration options with their default values:</p>
+
+      <div class="config-details">
+        <h4>Display Options</h4>
+        <ul>
+          <li><code>slidesToShow: 4</code> - Number of slides visible at once</li>
+          <li><code>slidesToScroll: 1</code> - Number of slides to scroll per navigation</li>
+          <li><code>gap: 24</code> - Space between slides in pixels</li>
+          <li><code>startSlide: 0</code> - Index of initial slide to show</li>
+          <li><code>minSlideWidth: 0</code> - Minimum width for each slide in pixels</li>
+        </ul>
+      </div>
+
+      <div class="config-details">
+        <h4>Behavior Options</h4>
+        <ul>
+          <li><code>infinite: false</code> - Enable infinite/continuous scrolling</li>
+          <li><code>bounceBack: false</code> - Enable bounce-back animation at edges</li>
+          <li><code>centerMode: false</code> - Center the active slide</li>
+          <li><code>autoplay: false</code> - Enable automatic slide advancement</li>
+          <li><code>autoplaySpeed: 3000</code> - Autoplay interval in milliseconds</li>
+        </ul>
+      </div>
+
+      <div class="config-details">
+        <h4>Overflow Options</h4>
+        <ul>
+          <li><code>showOverflow: false</code> - Show partial next/previous slides</li>
+          <li><code>overflowAmount: 0.5</code> - Amount of overflow slide to show (0-1)</li>
+          <li><code>containerMaxWidth: 1200</code> - Maximum container width in pixels</li>
+          <li><code>basePadding: 35</code> - Base padding in pixels for overflow mode</li>
+        </ul>
+      </div>
+
+      <div class="config-details">
+        <h4>Navigation Options</h4>
+        <ul>
+          <li><code>prevElement: '.prev, .slider-prev, .slider-grid-prev'</code> - Selector for previous button</li>
+          <li><code>nextElement: '.next, .slider-next, .slider-grid-next'</code> - Selector for next button</li>
+        </ul>
+      </div>
+
+      <div class="config-details">
+        <h4>Responsive Options</h4>
+        <ul>
+          <li><code>responsive: [...]</code> - Array of breakpoint configurations</li>
+        </ul>
+      </div>
+
+      <pre><code><span class="code-comment">// Example responsive configuration</span>
+<span class="code-property">responsive</span>: [
+  {
+    <span class="code-property">breakpoint</span>: <span class="code-value">1200</span>,
+    <span class="code-property">settings</span>: { <span class="code-property">slidesToShow</span>: <span class="code-value">3</span> }
+  },
+  {
+    <span class="code-property">breakpoint</span>: <span class="code-value">992</span>,
+    <span class="code-property">settings</span>: { <span class="code-property">slidesToShow</span>: <span class="code-value">2</span> }
+  },
+  {
+    <span class="code-property">breakpoint</span>: <span class="code-value">768</span>,
+    <span class="code-property">settings</span>: { <span class="code-property">slidesToShow</span>: <span class="code-value">1</span> }
+  }
+]</code></pre>
+    </section>
+
+    <footer data-text="center">
+      <p>Made with ❤️ by <a href="https://jomurgel.com">jomurgel</a> · © 2022-2025</p>
+      <p><small>Gradients by <a href="https://webgradients.com/" target="_blank">WebGradients</a></small></p>
+    </footer>
+  </div>
+
+  <!-- Native Scroll Slider Script -->
+  <script src="./dist/native-scroll-slider.min.js"></script>
+
+  <script>
+    // Initialize all sliders
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // Basic Slider
+      new NativeScrollSlider(document.querySelector('#basic-slider .slider-track'), {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        gap: 20
+      });
+
+      // Autoplay Slider
+      new NativeScrollSlider(document.querySelector('#autoplay-slider .slider-track'), {
+        slidesToShow: 2,
+        autoplay: true,
+        autoplaySpeed: 3000
+      });
+
+      // Infinite Scroll Slider
+      new NativeScrollSlider(document.querySelector('#infinite-slider .slider-track'), {
+        slidesToShow: 3,
+        infinite: true,
+        autoplay: true,
+        autoplaySpeed: 4000
+      });
+
+      // Center Mode Slider
+      new NativeScrollSlider(document.querySelector('#center-slider .slider-track'), {
+        slidesToShow: 3,
+        centerMode: true,
+        infinite: true
+      });
+
+      // Responsive Slider
+      new NativeScrollSlider(document.querySelector('#responsive-slider .slider-track'), {
+        slidesToShow: 4,
+        responsive: [
+          {
+            breakpoint: 1200,
+            settings: { slidesToShow: 3 }
+          },
+          {
+            breakpoint: 992,
+            settings: { slidesToShow: 2 }
+          },
+          {
+            breakpoint: 768,
+            settings: { slidesToShow: 1 }
+          }
+        ]
+      });
+
+      // Show Overflow Slider
+      new NativeScrollSlider(document.querySelector('#overflow-slider .slider-track'), {
+        slidesToShow: 2,
+        showOverflow: true,
+        overflowAmount: 0.3
+      });
+
+      // Toggle custom slide styles
+      const toggleButton = document.getElementById('toggle-styles');
+      if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+          document.body.classList.toggle('unstyled-slides');
+          const isUnstyled = document.body.classList.contains('unstyled-slides');
+          toggleButton.textContent = isUnstyled ? 'Turn ON Slider Demo Styles' : 'Turn OFF Slider Demo Styles';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
