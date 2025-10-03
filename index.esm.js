@@ -1,0 +1,700 @@
+/**
+ * NativeScrollSlider
+ *
+ * A simple slider that leverages native overflow scroll behavior.
+ *
+ * @author Jo Murgel
+ * @version 0.0.2
+ * @license MIT
+ * @copyright 2024 Jo Murgel
+ * @see https://github.com/jomurgel/native-scroll-slider
+ * @see https://www.npmjs.com/package/@jomurgel/native-scroll-slider
+ */
+class u {
+  /**
+     * Initialize the slider.
+     *
+     * @constructor
+     * @param {HTMLElement} trackElement - The track element containing the slides.
+     * @param {Object} options - The options for the slider.
+     * @returns {void}
+     */
+  constructor(t, i = {}) {
+    if (!t) {
+      console.error("NativeScrollSlider: trackElement is null or undefined");
+      return;
+    }
+    if (this.track = t, this.container = this.findContainer(t), this.options = this.buildConfig(i), this.slides = Array.from(this.track.children), this.slides.length === 0) {
+      console.error("NativeScrollSlider: no slides found in track", this.track);
+      return;
+    }
+    this.prevBtn = this.findNavButton(this.options.prevElement), this.nextBtn = this.findNavButton(this.options.nextElement), this.currentSlide = 0, this.totalSlides = this.slides.length, this.autoplayInterval = null, this.slidePositions = [], this.isScrolling = !1, this.scrollTimeout = null, this.init();
+  }
+  /**
+     * Find the container element by looking up the DOM tree
+     *
+     * @param {HTMLElement} trackElement
+     * @returns {HTMLElement}
+     */
+  findContainer(t) {
+    let i = t;
+    for (; i && i !== document.body; ) {
+      if (i.dataset.sliderConfig)
+        return i;
+      i = i.parentElement;
+    }
+    return t.parentElement || t;
+  }
+  /**
+     * Build the configuration by merging defaults, data attributes, and passed options
+     *
+     * @param {Object} passedOptions
+     * @returns {Object}
+     */
+  buildConfig(t) {
+    const i = {
+      slidesToShow: 4,
+      slidesToScroll: 1,
+      infinite: !1,
+      bounceBack: !1,
+      centerMode: !1,
+      autoplay: !1,
+      autoplaySpeed: 3e3,
+      gap: 24,
+      startSlide: 0,
+      // @see https://dev.to/gerryleonugroho/responsive-design-breakpoints-2025-playbook-53ih
+      responsive: [
+        {
+          breakpoint: 1200,
+          settings: {
+            slidesToShow: 3
+          }
+        },
+        {
+          breakpoint: 992,
+          settings: {
+            slidesToShow: 2
+          }
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 1
+          }
+        },
+        {
+          breakpoint: 576,
+          settings: {
+            slidesToShow: 1
+          }
+        }
+      ],
+      prevElement: ".prev, .slider-prev, .slider-grid-prev",
+      nextElement: ".next, .slider-next, .slider-grid-next",
+      minSlideWidth: 0,
+      showOverflow: !1,
+      overflowAmount: 0.5,
+      containerMaxWidth: 1200,
+      basePadding: 35
+    };
+    let e = {};
+    if (this.container && this.container.dataset.sliderConfig)
+      try {
+        e = JSON.parse(this.container.dataset.sliderConfig);
+      } catch (s) {
+        console.warn("NativeScrollSlider: Invalid JSON in data-slider-config", s);
+      }
+    return Object.assign({}, i, e, t);
+  }
+  /**
+     * Find navigation button using querySelector
+     *
+     * @param {string} selector
+     * @returns {HTMLElement|null}
+     */
+  findNavButton(t) {
+    if (!t) return null;
+    let i = this.container.querySelector(t);
+    if (i || (i = this.track.querySelector(t)), !i && this.container.parentElement) {
+      const e = this.container.parentElement.querySelector(".slider-controls");
+      e && (t.includes("prev") ? i = e.querySelector(".slider-prev") : t.includes("next") && (i = e.querySelector(".slider-next")));
+    }
+    return i;
+  }
+  /**
+     * Initialize the slider.
+     *
+     * @returns {void}
+     */
+  init() {
+    this.setupResponsive(), this.setupTrackStyles(), this.setupSlides(), this.calculateSlidePositions(), this.setupNavigation(), this.setupScrollListener(), this.setupAutoplay();
+    const t = this;
+    window.addEventListener("resize", () => {
+      t.handleResize();
+    }), this.container.classList.add("slider-ready"), setTimeout(() => {
+      t.goToSlide(t.currentOptions.startSlide);
+    }, 50), this.updateCurrentSlideFromScroll();
+  }
+  /**
+     * Setup basic track styles for horizontal scrolling
+     *
+     * @returns {void}
+     */
+  setupTrackStyles() {
+    if (this.track.style.display = "flex", this.track.style.overflowX = "auto", this.track.style.scrollBehavior = "smooth", this.track.style.scrollbarWidth = "none", this.track.style.msOverflowStyle = "none", this.currentOptions.showOverflow ? this.setupPullToRightStyles() : this.resetPullToRightStyles(), !document.getElementById("native-scroll-slider-styles")) {
+      const t = document.createElement("style");
+      t.id = "native-scroll-slider-styles", t.textContent = `
+						  .slider-ready .slider-track::-webkit-scrollbar,
+						  [data-slider-config] > *::-webkit-scrollbar {
+							  display: none;
+						  }
+					  `, document.head.appendChild(t);
+    }
+  }
+  /**
+     * Setup pull-to-right styles to break out to viewport width
+     *
+     * @returns {void}
+     */
+  setupPullToRightStyles() {
+    this.container.style.width = "100vw", this.container.style.position = "relative", this.container.style.left = "50%", this.container.style.right = "50%", this.container.style.marginLeft = "-50vw", this.container.style.marginRight = "-50vw", this.updatePullToRightPadding();
+  }
+  /**
+     * Reset pull-to-right styles when disabled
+     *
+     * @returns {void}
+     */
+  resetPullToRightStyles() {
+    this.container.style.width = "", this.container.style.position = "", this.container.style.left = "", this.container.style.right = "", this.container.style.marginLeft = "", this.container.style.marginRight = "", this.track.style.paddingLeft = "", this.track.style.paddingRight = "", this.pullToRightLeftPadding = 0;
+  }
+  /**
+     * Update pull-to-right padding based on viewport and container size
+     *
+     * @returns {void}
+     */
+  updatePullToRightPadding() {
+    if (!this.currentOptions.showOverflow)
+      return;
+    const t = window.innerWidth, i = this.currentOptions.containerMaxWidth, e = this.currentOptions.basePadding;
+    let s;
+    t <= i + e * 2 ? s = e : s = Math.max(e, (t - i) / 2 + e), this.track.style.paddingLeft = s + "px", this.track.style.paddingRight = e + "px", this.pullToRightLeftPadding = s;
+  }
+  /**
+   * Setup the responsive settings.
+   *
+   * @returns {void}
+   */
+  setupResponsive() {
+    const t = window.innerWidth;
+    let i = Object.assign({}, this.options);
+    const e = [...this.options.responsive].sort((s, n) => n.breakpoint - s.breakpoint);
+    for (let s = 0; s < e.length; s++) {
+      const n = e[s];
+      t <= n.breakpoint && (i = Object.assign(i, n.settings));
+    }
+    this.currentOptions = i;
+  }
+  /**
+   * Setup the slides.
+   *
+   * @returns {void}
+   */
+  setupSlides() {
+    if (!this.track) {
+      console.error("setupSlides: track is null");
+      return;
+    }
+    if (this.track.style.gap = this.currentOptions.gap + "px", !this.container) {
+      console.error("setupSlides: container is null");
+      return;
+    }
+    let t = this.container.offsetWidth, i, e, s, n, o;
+    if (this.currentOptions.showOverflow) {
+      this.updatePullToRightPadding(), t = window.innerWidth;
+      const l = t - this.pullToRightLeftPadding - this.currentOptions.basePadding;
+      e = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap, n = 0, this.currentOptions.overflowAmount > 0 && (n = (l - e - this.currentOptions.gap) / (this.currentOptions.slidesToShow + this.currentOptions.overflowAmount) * this.currentOptions.overflowAmount);
+      let r = (l - e - n) / this.currentOptions.slidesToShow;
+      const c = this.parseMinSlideWidth();
+      c > 0 && r < c ? s = c : s = r, i = 0;
+    } else {
+      e = (this.currentOptions.slidesToShow - 1) * this.currentOptions.gap;
+      let l = (t - e) / this.currentOptions.slidesToShow;
+      const r = this.parseMinSlideWidth();
+      r > 0 && l < r ? (s = r, o = s * this.currentOptions.slidesToShow + e, this.currentOptions.centerMode, i = Math.max(0, (t - o) / 2)) : (s = l, o = s * this.currentOptions.slidesToShow + e, i = Math.max(0, (t - o) / 2)), this.track.style.paddingLeft = i + "px", this.track.style.paddingRight = i + "px";
+    }
+    for (let l = 0; l < this.slides.length; l++)
+      this.slides[l] && this.slides[l].style && (this.slides[l].style.width = s + "px", this.slides[l].style.flexShrink = "0");
+    (this.currentOptions.infinite || this.currentOptions.bounceBack) && this.totalSlides > this.currentOptions.slidesToShow && (this.currentOptions.infinite ? this.setupTrueInfinite() : this.currentOptions.bounceBack && this.setupBounceBack());
+  }
+  /**
+   * Parse minSlideWidth from string or number
+   *
+   * @returns {number}
+   */
+  parseMinSlideWidth() {
+    if (!this.currentOptions.minSlideWidth) return 0;
+    const t = this.currentOptions.minSlideWidth;
+    if (typeof t == "string") {
+      const i = parseFloat(t);
+      return isNaN(i) ? 0 : i;
+    }
+    return typeof t == "number" ? t : 0;
+  }
+  /**
+   * Setup bounce back or infinite mode
+   *
+   * @param {string} mode - 'bounce' or 'infinite'
+   * @returns {void}
+   */
+  setupClonedSlides(t) {
+    const i = t === "infinite" ? this.currentOptions.slidesToShow + 1 : Math.max(this.currentOptions.slidesToShow, 2);
+    if (t === "infinite") {
+      for (let s = 0; s < i; s++) {
+        const n = s % this.totalSlides, o = this.slides[n].cloneNode(!0);
+        o.classList.add("cloned", "infinite-clone"), o.dataset.originalIndex = n, this.track.appendChild(o);
+      }
+      for (let s = 0; s < i; s++) {
+        const n = (this.totalSlides - i + s) % this.totalSlides, o = this.slides[n].cloneNode(!0);
+        o.classList.add("cloned", "infinite-clone"), o.dataset.originalIndex = n, this.track.insertBefore(o, this.track.firstChild);
+      }
+      this.initialCloneCount = i;
+    } else {
+      for (let s = 0; s < i; s++) {
+        const n = this.slides[s].cloneNode(!0);
+        n.classList.add("cloned", "bounce-clone"), this.track.appendChild(n);
+      }
+      for (let s = this.totalSlides - i; s < this.totalSlides; s++) {
+        const n = this.slides[s].cloneNode(!0);
+        n.classList.add("cloned", "bounce-clone"), this.track.insertBefore(n, this.track.firstChild);
+      }
+    }
+    this.allSlides = Array.from(this.track.children);
+    const e = this;
+    setTimeout(() => {
+      e.calculateSlidePositions();
+      const s = i + e.currentOptions.startSlide;
+      let n = e.slidePositions[s];
+      if (e.currentOptions.centerMode) {
+        const o = window.getComputedStyle(e.track), l = parseFloat(o.paddingLeft) || 0, r = parseFloat(o.paddingRight) || 0, c = e.track.offsetWidth - l - r, a = e.slides[0].offsetWidth;
+        n = n - c / 2 + a / 2;
+      }
+      e.track.scrollLeft = n, e.currentSlide = e.currentOptions.startSlide;
+    }, 10);
+  }
+  /**
+   * Setup the bounce back.
+   *
+   * @returns {void}
+   */
+  setupBounceBack() {
+    this.setupClonedSlides("bounce");
+  }
+  /**
+   * Setup the true infinite scroll with a simpler, more reliable approach
+   *
+   * @returns {void}
+   */
+  setupTrueInfinite() {
+    const t = this.container.offsetWidth, i = this.slides[0].offsetWidth + this.currentOptions.gap, e = Math.ceil(t / i), s = Math.max(this.totalSlides, e * 2);
+    this.initialCloneCount = s;
+    for (let o = 0; o < s; o++) {
+      const l = o % this.totalSlides, r = this.slides[l].cloneNode(!0);
+      r.classList.add("cloned", "infinite-clone"), r.dataset.originalIndex = l, this.track.appendChild(r);
+    }
+    for (let o = 0; o < s; o++) {
+      const l = (this.totalSlides - 1 - o % this.totalSlides) % this.totalSlides, r = this.slides[l].cloneNode(!0);
+      r.classList.add("cloned", "infinite-clone"), r.dataset.originalIndex = l, this.track.insertBefore(r, this.track.firstChild);
+    }
+    this.allSlides = Array.from(this.track.children);
+    const n = this;
+    setTimeout(() => {
+      n.calculateSlidePositions();
+      const o = s + n.currentOptions.startSlide;
+      let l = n.slidePositions[o];
+      if (n.currentOptions.centerMode) {
+        const r = window.getComputedStyle(n.track), c = parseFloat(r.paddingLeft) || 0, a = parseFloat(r.paddingRight) || 0, d = n.track.offsetWidth - c - a, h = n.slides[0].offsetWidth;
+        l = l - d / 2 + h / 2;
+      }
+      n.track.style.scrollBehavior = "auto", n.track.scrollLeft = l, n.track.style.scrollBehavior = "smooth", n.currentSlide = n.currentOptions.startSlide, n.infiniteScrollSetup = !0;
+    }, 10);
+  }
+  /**
+     * Calculate the slide positions.
+     *
+     * @returns {void}
+     */
+  calculateSlidePositions() {
+    this.slidePositions = [];
+    const t = this.allSlides || this.slides, i = parseFloat(this.track.style.paddingLeft) || 0;
+    for (let e = 0; e < t.length; e++)
+      this.slidePositions.push(t[e].offsetLeft - i);
+  }
+  /**
+   * Enhanced scroll listener for infinite scroll
+   *
+   * @returns {void}
+   */
+  setupScrollListener() {
+    const t = this;
+    this.track.addEventListener("scroll", () => {
+      t.isScrolling = !0, t.pauseAutoplay(), t.currentOptions.infinite && (clearTimeout(t.infiniteScrollTimeout), t.infiniteScrollTimeout = setTimeout(() => {
+        t.handleInfiniteScroll();
+      }, 50)), clearTimeout(t.scrollTimeout), t.scrollTimeout = setTimeout(() => {
+        t.isScrolling = !1, t.resumeAutoplay();
+      }, 150), t.updateCurrentSlideFromScroll();
+    }, { passive: !0 });
+  }
+  /**
+   * Update the current slide from the scroll.
+   *
+   * @returns {void}
+   */
+  updateCurrentSlideFromScroll() {
+    const t = this.track.scrollLeft;
+    if (this.currentOptions.infinite) {
+      this.updateCenterMode();
+      return;
+    }
+    let i = t;
+    if (this.currentOptions.centerMode) {
+      const n = window.getComputedStyle(this.container), o = parseFloat(n.paddingLeft) || 0, l = parseFloat(n.paddingRight) || 0, r = this.container.offsetWidth - o - l;
+      i = t + r / 2 + o;
+    }
+    let e = 0, s = 1 / 0;
+    for (let n = 0; n < this.slidePositions.length; n++) {
+      const o = this.slidePositions[n];
+      let l = o;
+      if (this.currentOptions.centerMode) {
+        const c = this.slides[0].offsetWidth;
+        l = o + c / 2;
+      }
+      const r = Math.abs(i - l);
+      r < s && (s = r, e = n);
+    }
+    if (this.currentOptions.bounceBack && this.allSlides) {
+      const n = Math.max(this.currentOptions.slidesToShow, 2);
+      e >= n && e < n + this.totalSlides && (this.currentSlide = e - n);
+    } else
+      this.currentSlide = e;
+    this.updateNavigation(), this.updateCenterMode();
+  }
+  /**
+     * Handle the scroll end.
+     *
+     * @returns {void}
+     */
+  handleScrollEnd() {
+    this.currentOptions.bounceBack ? this.handleBounceBackScroll() : this.currentOptions.infinite && this.handleInfiniteScroll();
+  }
+  /**
+     * Handle the bounce back scroll.
+     *
+     * @returns {void}
+     */
+  handleBounceBackScroll() {
+    const t = Math.max(this.currentOptions.slidesToShow, 2), i = this.track.scrollLeft, e = this.slides[0].offsetWidth + this.currentOptions.gap;
+    if (i < t * e / 2) {
+      const s = t + this.totalSlides - (t - Math.floor(i / e));
+      this.track.scrollLeft = this.slidePositions[s];
+    } else if (i > this.slidePositions[t + this.totalSlides - 1]) {
+      const s = t + this.currentSlide % this.totalSlides;
+      this.track.scrollLeft = this.slidePositions[s];
+    }
+  }
+  /**
+   * Handle infinite scroll with seamless looping
+   *
+   * @returns {void}
+   */
+  handleInfiniteScroll() {
+    if (!this.infiniteScrollSetup) return;
+    const t = this.track.scrollLeft, i = this.slides[0].offsetWidth + this.currentOptions.gap, e = this.totalSlides * i, s = i * 2, n = this.slidePositions[this.initialCloneCount + this.totalSlides] - i * 2;
+    if (t <= s) {
+      const o = t + e;
+      this.seamlessJump(o);
+    } else if (t >= n) {
+      const o = t - e;
+      this.seamlessJump(o);
+    }
+  }
+  /**
+     * Setup the navigation.
+     *
+     * @returns {void}
+     */
+  setupNavigation() {
+    const t = this;
+    this.prevBtn && this.prevBtn.addEventListener("click", () => {
+      t.prev();
+    }), this.nextBtn && this.nextBtn.addEventListener("click", () => {
+      t.next();
+    }), this.updateNavigation();
+  }
+  /**
+   * Go to the slide.
+   *
+   * @param {number} slideIndex - The index of the slide to go to.
+   * @returns {void}
+   */
+  goToSlide(t) {
+    if (this.currentOptions.infinite || t < 0 || t >= this.totalSlides) return;
+    let i;
+    if (this.currentOptions.bounceBack) {
+      const e = Math.max(this.currentOptions.slidesToShow, 2);
+      i = this.slidePositions[e + t];
+    } else
+      i = this.slidePositions[t];
+    if (this.currentOptions.centerMode) {
+      const e = window.getComputedStyle(this.container), s = parseFloat(e.paddingLeft) || 0, n = parseFloat(e.paddingRight) || 0, o = this.container.offsetWidth - s - n, l = this.slides[0].offsetWidth;
+      i = i - o / 2 + l / 2, i = i - s;
+    }
+    this.track.scrollTo({
+      left: i,
+      behavior: "smooth"
+    }), this.currentSlide = t;
+  }
+  /**
+   * Perform a seamless jump to maintain infinite scroll illusion
+   *
+   * @param {number} newPosition - The new scroll position
+   * @returns {void}
+   */
+  seamlessJump(t) {
+    const i = this.track.style.scrollBehavior;
+    this.track.style.scrollBehavior = "auto", this.track.scrollLeft = t, setTimeout(() => {
+      this.track.style.scrollBehavior = i || "smooth";
+    }, 10);
+  }
+  /**
+   * Calculate how many slides are actually visible in the current viewport
+   * @returns {number}
+   */
+  getActualSlidesToShow() {
+    if (!this.slides.length) return this.currentOptions.slidesToShow;
+    const t = this.container.offsetWidth, i = this.slides[0].offsetWidth, e = this.currentOptions.gap, s = Math.floor((t + e) / (i + e));
+    return Math.min(s, this.currentOptions.slidesToShow);
+  }
+  /**
+   * Enhanced next method for infinite scroll
+   *
+   * @returns {void}
+   */
+  next() {
+    if (this.currentOptions.infinite) {
+      const s = (this.slides[0].offsetWidth + this.currentOptions.gap) * this.currentOptions.slidesToScroll;
+      if (this.currentOptions.centerMode) {
+        const o = this.findCurrentCenterSlideIndex() + this.currentOptions.slidesToScroll;
+        this.goToCenterSlide(o);
+      } else
+        this.track.scrollTo({
+          left: this.track.scrollLeft + s,
+          behavior: "smooth"
+        });
+      return;
+    }
+    const t = this.getActualSlidesToShow();
+    let i;
+    this.currentOptions.bounceBack ? i = (this.currentSlide + this.currentOptions.slidesToScroll) % this.totalSlides : i = Math.min(
+      this.currentSlide + this.currentOptions.slidesToScroll,
+      this.totalSlides - t
+    ), this.goToSlide(i);
+  }
+  /**
+   * Enhanced prev method for infinite scroll
+   *
+   * @returns {void}
+   */
+  prev() {
+    if (this.currentOptions.infinite) {
+      const e = (this.slides[0].offsetWidth + this.currentOptions.gap) * this.currentOptions.slidesToScroll;
+      if (this.currentOptions.centerMode) {
+        const n = this.findCurrentCenterSlideIndex() - this.currentOptions.slidesToScroll;
+        this.goToCenterSlide(n);
+      } else
+        this.track.scrollTo({
+          left: this.track.scrollLeft - e,
+          behavior: "smooth"
+        });
+      return;
+    }
+    let t;
+    this.currentOptions.bounceBack ? (t = this.currentSlide - this.currentOptions.slidesToScroll, t < 0 && (t = this.totalSlides + t)) : t = Math.max(this.currentSlide - this.currentOptions.slidesToScroll, 0), this.goToSlide(t);
+  }
+  /**
+   * Find the index of the currently centered slide in infinite mode
+   *
+   * @returns {number}
+   */
+  findCurrentCenterSlideIndex() {
+    const t = this.track.scrollLeft, i = window.getComputedStyle(this.track), e = parseFloat(i.paddingLeft) || 0, s = this.track.offsetWidth - e - (parseFloat(i.paddingRight) || 0), n = t + s / 2;
+    let o = 0, l = 1 / 0;
+    const r = this.allSlides || this.slides;
+    for (let c = 0; c < r.length; c++) {
+      const a = r[c], d = a.offsetLeft + a.offsetWidth / 2 - e, h = Math.abs(n - d);
+      h < l && (l = h, o = c);
+    }
+    return o;
+  }
+  /**
+   * Go to a specific slide index and center it (for infinite mode)
+   *
+   * @param {number} slideIndex
+   * @returns {void}
+   */
+  goToCenterSlide(t) {
+    const i = this.allSlides || this.slides;
+    if (t < 0 || t >= i.length)
+      return;
+    const e = i[t], s = window.getComputedStyle(this.track), n = parseFloat(s.paddingLeft) || 0, o = parseFloat(s.paddingRight) || 0, l = this.track.offsetWidth - n - o, r = e.offsetLeft - n, c = e.offsetWidth, a = r - l / 2 + c / 2;
+    this.track.scrollTo({
+      left: a,
+      behavior: "smooth"
+    });
+  }
+  /**
+     * Update the navigation.
+     *
+     * @returns {void}
+     */
+  updateNavigation() {
+    if (!(!this.prevBtn || !this.nextBtn)) {
+      if (this.currentOptions.infinite) {
+        this.prevBtn.disabled = !1, this.nextBtn.disabled = !1;
+        return;
+      }
+      if (this.currentOptions.bounceBack)
+        this.prevBtn.disabled = !1, this.nextBtn.disabled = !1;
+      else {
+        this.prevBtn.disabled = this.currentSlide === 0;
+        const t = this.track.scrollWidth - this.track.clientWidth, i = this.track.scrollLeft;
+        this.nextBtn.disabled = i >= t - 5;
+      }
+    }
+  }
+  /**
+     * Update the center mode.
+     *
+     * @returns {void}
+     */
+  updateCenterMode() {
+    if (!this.currentOptions.centerMode) return;
+    const t = this.allSlides || this.slides;
+    for (let e = 0; e < t.length; e++)
+      t[e].classList.remove("center");
+    let i;
+    if (this.currentOptions.bounceBack)
+      i = Math.max(this.currentOptions.slidesToShow, 2) + this.currentSlide;
+    else if (this.currentOptions.infinite) {
+      const e = this.track.scrollLeft, s = this.container.offsetWidth, n = e + s / 2;
+      let o = null, l = 1 / 0;
+      for (let r = 0; r < t.length; r++) {
+        const c = t[r], a = c.offsetLeft + c.offsetWidth / 2, d = Math.abs(n - a);
+        d < l && (l = d, o = c);
+      }
+      o && o.classList.add("center");
+      return;
+    } else
+      i = this.currentSlide;
+    t[i] && t[i].classList.add("center");
+  }
+  /**
+     * Setup the autoplay.
+     *
+     * @returns {void}
+     */
+  setupAutoplay() {
+    if (this.currentOptions.autoplay) {
+      this.startAutoplay();
+      const t = this;
+      this.container.addEventListener("mouseenter", () => {
+        t.pauseAutoplay();
+      }), this.container.addEventListener("mouseleave", () => {
+        t.resumeAutoplay();
+      });
+    }
+  }
+  /**
+   * Enhanced autoplay for infinite scroll
+   *
+   * @returns {void}
+   */
+  startAutoplay() {
+    if (!this.currentOptions.autoplay) return;
+    this.stopAutoplay();
+    const t = this;
+    this.autoplayInterval = setInterval(() => {
+      if (!t.isScrolling)
+        if (t.currentOptions.infinite) {
+          const e = (t.slides[0].offsetWidth + t.currentOptions.gap) * t.currentOptions.slidesToScroll;
+          if (t.currentOptions.centerMode) {
+            const n = t.findCurrentCenterSlideIndex() + t.currentOptions.slidesToScroll;
+            t.goToCenterSlide(n);
+          } else
+            t.track.scrollTo({
+              left: t.track.scrollLeft + e,
+              behavior: "smooth"
+            });
+        } else
+          t.next();
+    }, this.currentOptions.autoplaySpeed);
+  }
+  /**
+     * Stop the autoplay.
+     *
+     * @returns {void}
+     */
+  stopAutoplay() {
+    this.autoplayInterval && (clearInterval(this.autoplayInterval), this.autoplayInterval = null);
+  }
+  /**
+     * Pause the autoplay.
+     *
+     * @returns {void}
+     */
+  pauseAutoplay() {
+    this.autoplayPaused = !0, this.stopAutoplay();
+  }
+  /**
+     * Resume the autoplay.
+     *
+     * @returns {void}
+     */
+  resumeAutoplay() {
+    if (this.currentOptions.autoplay && this.autoplayPaused) {
+      this.autoplayPaused = !1;
+      const t = this;
+      setTimeout(() => {
+        !t.autoplayPaused && !t.isScrolling && t.startAutoplay();
+      }, 1e3);
+    }
+  }
+  /**
+     * Handle the resize.
+     *
+     * @returns {void}
+     */
+  handleResize() {
+    const t = this;
+    setTimeout(() => {
+      const i = t.currentOptions.slidesToShow, e = t.currentOptions.showOverflow;
+      if (t.setupResponsive(), t.currentOptions.showOverflow !== e ? t.setupTrackStyles() : t.currentOptions.showOverflow && t.updatePullToRightPadding(), t.setupSlides(), t.calculateSlidePositions(), t.currentOptions.slidesToShow !== i) {
+        const s = t.currentOptions.startSlide || 0;
+        t.goToSlide(s);
+      } else
+        t.goToSlide(t.currentSlide);
+    }, 100);
+  }
+  /**
+   * Enhanced destroy method to clean up infinite scroll timeouts
+   *
+   * @returns {void}
+   */
+  destroy() {
+    this.stopAutoplay(), clearTimeout(this.scrollTimeout), clearTimeout(this.infiniteScrollTimeout), this.track && this.track.querySelectorAll(".infinite-clone").forEach((i) => i.remove());
+  }
+}
+typeof window < "u" && (window.NativeScrollSlider = u);
+export {
+  u as default
+};
+//# sourceMappingURL=index.esm.js.map
