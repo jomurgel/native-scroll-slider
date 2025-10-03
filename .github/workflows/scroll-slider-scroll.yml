@@ -28,16 +28,10 @@ jobs:
           node-version: 18
           cache: 'npm'
 
-      - name: Install and Build
+      - name: Install and Build Demo
         run: |
           npm install
-          npm run build
-
-      - name: Copy demo files to dist
-        run: |
-          cp index.html dist/
-          cp acorn.svg dist/ 2>/dev/null || true
-          cp github-corner.svg dist/ 2>/dev/null || true
+          npm run build:demo
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

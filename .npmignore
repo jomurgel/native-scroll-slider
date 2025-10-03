@@ -1,0 +1,16 @@
+# Demo files (not needed in npm package)
+demo.js
+index.html
+public/
+BUILD.md
+
+# Development files
+src/
+.github/
+.eslintrc.json
+vite.config.js
+webpack.config.js
+
+# Build artifacts
+*.log
+node_modules/
