@@ -639,6 +639,11 @@ MIT License © 2024 [Jo Murgel](https://github.com/jomurgel) - see [LICENSE](LIC
 
 ### v0.0.6
 - Fixes bug where nav buttons were being ignored when multiple sliders are present.
+
+### v0.0.7
+- Updates js structure. Takes proof of concept into more organized file strucutre.
+- Adds demo for Github Pages
+- Adds deployment updates for npm and GH pages.
 ---
 
 **Made with ❤️ by [jomurgel](https://github.com/jomurgel)**
