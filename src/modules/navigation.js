@@ -5,6 +5,7 @@
  */
 
 import { getActualSlidesToShow } from '../helpers/utils.js';
+import { findCurrentCenterSlideIndex, goToCenterSlide } from './infinite-scroll.js';
 
 /**
  * Setup navigation buttons and event listeners
@@ -77,7 +78,6 @@ export function next(context) {
     const scrollAmount = slideWidth * currentOptions.slidesToScroll;
 
     if (currentOptions.centerMode) {
-      const { findCurrentCenterSlideIndex, goToCenterSlide } = require('./infinite-scroll.js');
       const currentCenterSlide = findCurrentCenterSlideIndex(context);
       const nextCenterSlide = currentCenterSlide + currentOptions.slidesToScroll;
       goToCenterSlide(context, nextCenterSlide);
@@ -121,7 +121,6 @@ export function prev(context) {
     const scrollAmount = slideWidth * currentOptions.slidesToScroll;
 
     if (currentOptions.centerMode) {
-      const { findCurrentCenterSlideIndex, goToCenterSlide } = require('./infinite-scroll.js');
       const currentCenterSlide = findCurrentCenterSlideIndex(context);
       const prevCenterSlide = currentCenterSlide - currentOptions.slidesToScroll;
       goToCenterSlide(context, prevCenterSlide);

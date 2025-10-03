@@ -4,6 +4,9 @@
  * @module modules/autoplay
  */
 
+import { findCurrentCenterSlideIndex, goToCenterSlide } from './infinite-scroll.js';
+import { next } from './navigation.js';
+
 /**
  * Setup autoplay with pause on hover
  *
@@ -42,7 +45,6 @@ export function startAutoplay(context) {
         const scrollAmount = slideWidth * context.currentOptions.slidesToScroll;
 
         if (context.currentOptions.centerMode) {
-          const { findCurrentCenterSlideIndex, goToCenterSlide } = require('./infinite-scroll.js');
           const currentCenterSlide = findCurrentCenterSlideIndex(context);
           const nextCenterSlide = currentCenterSlide + context.currentOptions.slidesToScroll;
           goToCenterSlide(context, nextCenterSlide);
@@ -54,7 +56,6 @@ export function startAutoplay(context) {
         }
       } else {
         // Non-infinite modes use next() method
-        const { next } = require('./navigation.js');
         next(context);
       }
     }
