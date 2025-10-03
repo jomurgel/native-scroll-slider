@@ -6,6 +6,8 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 [![Bundle Size](https://img.shields.io/badge/bundle%20size-0.5%20KB%20gzipped-brightgreen)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**[View Live Demos](https://jomurgel.github.io/native-scroll-slider)** | [Documentation](#-configuration-options) | [Examples](#-usage-examples)
+
 ## ✨ Features
 
 - **Ultra-lightweight**: Only ~3.7KB (~0.5KB gzipped) - 90% smaller than alternatives
@@ -26,9 +28,9 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 npm install @jomurgel/native-scroll-slider
 ```
 
-### CDN (Coming Soon)
+### CDN
 ```html
-<script src="https://unpkg.com/@jomurgel/native-scroll-slider/dist/native-scroll-slider.min.js"></script>
+<script src="https://unpkg.com/native-scroll-slider/dist/native-scroll-slider.min.js"></script>
 <script>
   const slider = new NativeScrollSlider(document.querySelector('.slider-track'));
 </script>
