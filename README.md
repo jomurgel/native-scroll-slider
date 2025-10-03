@@ -8,16 +8,16 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 
 ## ✨ Features
 
-- 🪶 **Ultra-lightweight**: Only ~3.7KB (~0.5KB gzipped) - 90% smaller than alternatives
-- 🚀 **Native performance**: Uses browser's native scrolling for 60fps animations
-- 📱 **Touch-friendly**: Built-in touch/swipe support without additional libraries
-- 👆 **Native scrolling**: Touch and mouse drag scrolling work naturally - no hijacked events
-- 🎨 **Highly configurable**: 20+ options for complete customization
-- 📐 **Responsive**: Built-in responsive breakpoints and adaptive layouts
-- ♿ **Accessible**: Keyboard navigation and screen reader friendly
-- 🔄 **Multiple modes**: Standard, infinite scroll, bounce-back, and center mode
-- 📦 **Zero dependencies**: Pure vanilla JavaScript, works everywhere
-- 🌐 **Modern browsers**: ES6+ with graceful degradation
+- **Ultra-lightweight**: Only ~3.7KB (~0.5KB gzipped) - 90% smaller than alternatives
+- **Native performance**: Uses browser's native scrolling for 60fps animations
+- **Touch-friendly**: Built-in touch/swipe support without additional libraries
+- **Native scrolling**: Touch and mouse drag scrolling work naturally - no hijacked events
+- **Highly configurable**: 20+ options for complete customization
+- **Responsive**: Built-in responsive breakpoints and adaptive layouts
+- **Accessible**: Keyboard navigation and screen reader friendly
+- **Multiple modes**: Standard, infinite scroll, bounce-back, and center mode
+- **Zero dependencies**: Pure vanilla JavaScript, works everywhere
+- **Modern browsers**: ES6+ with graceful degradation
 
 ## 📦 Installation
 
