@@ -1,6 +1,6 @@
 {
   "name": "native-scroll-slider",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A simple slider that leverages native overflow scroll behavior.",
   "license": "MIT",
   "author": "Jo Murgel",
@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "build": "vite build",
-    "dev": "vite build --watch",
+    "dev": "vite",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "clean": "rm -rf dist",
