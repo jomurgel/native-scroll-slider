@@ -8,7 +8,7 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 
 **[View Live Demos](https://jomurgel.github.io/native-scroll-slider)** | [Documentation](#-configuration-options) | [Examples](#-usage-examples)
 
-## ✨ Features
+## Features
 
 - **Ultra-lightweight**: Only ~3.7KB (~0.5KB gzipped) - 90% smaller than alternatives
 - **Native performance**: Uses browser's native scrolling for 60fps animations
@@ -610,7 +610,7 @@ slider.handleResize();
 
 MIT License © 2024 [Jo Murgel](https://github.com/jomurgel) - see [LICENSE](LICENSE) file for details.
 
-## cknowledgments
+## Acknowledgments
 
 - Inspired by native browser scrolling capabilities
 - Built for modern web performance standards
