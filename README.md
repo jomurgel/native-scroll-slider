@@ -21,7 +21,7 @@ A lightweight, dependency-free JavaScript slider that leverages native browser s
 - **Zero dependencies**: Pure vanilla JavaScript, works everywhere
 - **Modern browsers**: ES6+ with graceful degradation
 
-## 📦 Installation
+## Installation
 
 ### npm
 ```bash
@@ -46,7 +46,7 @@ import NativeScrollSlider from 'native-scroll-slider';
 ### Direct Download
 Download from [GitHub releases](https://github.com/jomurgel/native-scroll-slider/releases)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic HTML Structure
 ```html
@@ -87,7 +87,7 @@ const slider = new NativeScrollSlider(document.querySelector('.slider-track'), {
 });
 ```
 
-## ⚙️ Configuration Options
+## Configuration Options
 
 ### Complete Options Table
 
@@ -187,7 +187,7 @@ const slider = new NativeScrollSlider(track, {
 });
 ```
 
-## 🎯 Usage Examples
+## Usage Examples
 
 ### Image Gallery
 ```html
@@ -262,7 +262,7 @@ const cardSlider = new NativeScrollSlider(document.querySelector('.cards-track')
 });
 ```
 
-## 🎨 Styling
+## Styling
 
 ### Basic CSS
 ```css
@@ -332,14 +332,14 @@ const cardSlider = new NativeScrollSlider(document.querySelector('.cards-track')
 }
 ```
 
-## 📱 Responsive Design
+## Responsive Design
 
 ### Mobile-First Approach
 ```javascript
 const responsiveSlider = new NativeScrollSlider(track, {
   // Mobile defaults (matches built-in responsive)
   slidesToShow: 4, // Desktop default
-  
+
   // Custom responsive overrides (combines with defaults)
   responsive: [
     {
@@ -368,7 +368,7 @@ const responsiveSlider = new NativeScrollSlider(track, {
 });
 ```
 
-## 🔧 API Reference
+## API Reference
 
 ### Creating a Slider Instance
 ```javascript
@@ -470,7 +470,7 @@ slider.pauseAutoplay();  // Pause autoplay
 slider.resumeAutoplay(); // Resume autoplay
 ```
 
-## 🌟 Advanced Features
+## Advanced Features
 
 ### Infinite Scroll
 ```javascript
@@ -493,7 +493,7 @@ const peekSlider = new NativeScrollSlider(track, {
 // Also enables full-width breakout functionality
 ```
 
-## 📊 Performance Comparison
+## Performance Comparison
 
 | Library | Bundle Size (gzipped) | Dependencies | Performance |
 |---------|----------------------|--------------|-------------|
@@ -512,7 +512,7 @@ const peekSlider = new NativeScrollSlider(track, {
 - **Accessibility**: Works with screen readers and keyboards
 - **Future-proof**: Uses web standards, not polyfills
 
-## 🛠️ Browser Support
+## Browser Support
 
 - **Modern browsers**: Chrome 60+, Firefox 55+, Safari 12+, Edge 79+
 - **Mobile**: iOS 12+, Android 7+
@@ -529,7 +529,7 @@ if (isSupported) {
 }
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Here's how to get started:
 
@@ -569,7 +569,7 @@ npm run build
 - Maintain backward compatibility
 - Keep bundle size minimal
 
-## 🐛 Issues & Support
+## Issues & Support
 
 ### Reporting Issues
 When reporting issues, please include:
@@ -606,18 +606,18 @@ document.addEventListener('DOMContentLoaded', () => {
 slider.handleResize();
 ```
 
-## 📄 License
+## License
 
 MIT License © 2024 [Jo Murgel](https://github.com/jomurgel) - see [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## cknowledgments
 
 - Inspired by native browser scrolling capabilities
-- Built for modern web performance standards  
+- Built for modern web performance standards
 - Responsive breakpoints based on [2025 design playbook](https://dev.to/gerryleonugroho/responsive-design-breakpoints-2025-playbook-53ih)
 - Designed with accessibility in mind
 
-## 📈 Changelog
+## Changelog
 
 ### v0.0.1
 - Initial release
@@ -648,6 +648,10 @@ MIT License © 2024 [Jo Murgel](https://github.com/jomurgel) - see [LICENSE](LIC
 - Updates js structure. Takes proof of concept into more organized file strucutre.
 - Adds demo for Github Pages
 - Adds deployment updates for npm and GH pages.
+
+### v0.0.8
+- Demo and README cleanup.
+
 ---
 
 **Made with ❤️ by [jomurgel](https://github.com/jomurgel)**
